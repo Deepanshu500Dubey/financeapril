@@ -8227,8 +8227,8 @@ IBMBOB_DATA_FILES = {
         'IBMBOB_Group_PL_LineItems_Mar2026_GENERATED.csv',
     ),
     'workforce': (
-        'IBMBOB_Workforce_Cost_Output_Mar2026.csv',
-        'IBMBOB_Workforce_Cost_Output_Mar2026_GENERATED.csv',
+        'IBMBOB_Workforce_Cost_Output_Apr2026.csv',  # Your perfect file
+        'IBMBOB_Workforce_Cost_Output_Apr2026_GENERATED.csv',
     ),
     'esg': (
         'IBMBOB_ESG_Cost_KPI_Mar2026.csv',

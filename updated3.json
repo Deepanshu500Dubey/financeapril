@@ -1,0 +1,3737 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Finance Month-End Close AI Agent API",
+    "description": "API endpoints for AI-powered month-end close automation with Dashboard Approvals and Email Reports",
+    "version": "3.0.0"
+  },
+  "servers":[{
+    "url":"https://financeapril.onrender.com/"
+  }],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "Root endpoint - API health check",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Octane_logo.png": {
+      "get": {
+        "summary": "Get Logo",
+        "description": "Serve the Octane logo",
+        "operationId": "get_logo_Octane_logo_png_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Health check endpoint",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard": {
+      "get": {
+        "summary": "Dashboard Home",
+        "description": "Main dashboard for approvals with black/white/grey theme",
+        "operationId": "dashboard_home_dashboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/approvals/{token}": {
+      "get": {
+        "summary": "View Approval Dashboard",
+        "description": "View single approval item in dashboard with bullet points for metadata",
+        "operationId": "view_approval_dashboard_dashboard_approvals__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/assign-page/{token}": {
+      "get": {
+        "summary": "Assign Approval Page",
+        "description": "Dedicated page for assigning approval items",
+        "operationId": "assign_approval_page_approvals_assign_page__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/pending": {
+      "get": {
+        "summary": "Get Pending Approvals",
+        "description": "Get all pending approvals",
+        "operationId": "get_pending_approvals_approvals_pending_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/status/{token}": {
+      "get": {
+        "summary": "Get Approval Status",
+        "description": "Get status of an approval by token",
+        "operationId": "get_approval_status_approvals_status__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/decide": {
+      "get": {
+        "summary": "Decide Approval",
+        "description": "Decision endpoint for approvals (can be used from dashboard links)",
+        "operationId": "decide_approval_approvals_decide_get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          },
+          {
+            "name": "approved",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean",
+              "title": "Approved"
+            }
+          },
+          {
+            "name": "reviewer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Dashboard User",
+              "title": "Reviewer"
+            }
+          },
+          {
+            "name": "comments",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Comments"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/batch": {
+      "post": {
+        "summary": "Batch Approve",
+        "description": "Batch approve/reject multiple items",
+        "operationId": "batch_approve_approvals_batch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalBatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/approve_all": {
+      "post": {
+        "summary": "Approve All Pending",
+        "description": "Approve all pending approvals in one go",
+        "operationId": "approve_all_pending_approvals_approve_all_post",
+        "parameters": [
+          {
+            "name": "reviewer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Dashboard User",
+              "title": "Reviewer"
+            }
+          },
+          {
+            "name": "comments",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "Bulk approved from dashboard",
+              "title": "Comments"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/reject_all": {
+      "post": {
+        "summary": "Reject All Pending",
+        "description": "Reject all pending approvals in one go",
+        "operationId": "reject_all_pending_approvals_reject_all_post",
+        "parameters": [
+          {
+            "name": "reviewer",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "Dashboard User",
+              "title": "Reviewer"
+            }
+          },
+          {
+            "name": "comments",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "Bulk rejected from dashboard",
+              "title": "Comments"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/history": {
+      "get": {
+        "summary": "Get Approval History",
+        "description": "Get approval history with pagination",
+        "operationId": "get_approval_history_approvals_history_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/stats": {
+      "get": {
+        "summary": "Get Approval Stats",
+        "description": "Get approval statistics",
+        "operationId": "get_approval_stats_approvals_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/assignees": {
+      "get": {
+        "summary": "Get Assignees",
+        "description": "Get list of available assignees",
+        "operationId": "get_assignees_approvals_assignees_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/assign": {
+      "post": {
+        "summary": "Assign Approval Item",
+        "description": "Assign an approval item to a specific person and send email notification.\nThis does NOT change the approval status - item remains PENDING until the assignee acts.",
+        "operationId": "assign_approval_item_approvals_assign_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalAssignmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/approvals/check_status/{fiscal_period}": {
+      "get": {
+        "summary": "Check Approval Status",
+        "description": "Check status of all approvals generated for a fiscal period\nUseful before closing the period",
+        "operationId": "check_approval_status_approvals_check_status__fiscal_period__get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/initial_assessment": {
+      "post": {
+        "summary": "Initial Assessment",
+        "description": "Provide initial data assessment without full exception detection",
+        "operationId": "initial_assessment_tools_initial_assessment_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrialBalanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/generate_trial_balance": {
+      "post": {
+        "summary": "Generate Trial Balance",
+        "description": "Generate trial balance and detect exceptions with approval links",
+        "operationId": "generate_trial_balance_tools_generate_trial_balance_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrialBalanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/analyze_ar_variance": {
+      "post": {
+        "summary": "Analyze Ar Variance",
+        "description": "Analyze Accounts Receivable variance between subledger and GL",
+        "operationId": "analyze_ar_variance_tools_analyze_ar_variance_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ARVarianceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/assign_cost_centers": {
+      "post": {
+        "summary": "Assign Cost Centers",
+        "description": "Apply APPROVED cost center assignments to GL transactions.\nThis should only be called AFTER user has approved suggestions in dashboard.",
+        "operationId": "assign_cost_centers_tools_assign_cost_centers_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CostCenterBatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/post_journal_entries": {
+      "post": {
+        "summary": "Post Journal Entries",
+        "description": "Post approved journal entries to GL",
+        "operationId": "post_journal_entries_tools_post_journal_entries_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JournalEntryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/budget_variance_analysis": {
+      "post": {
+        "summary": "Budget Variance Analysis",
+        "description": "Compare actuals vs budget",
+        "operationId": "budget_variance_analysis_tools_budget_variance_analysis_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetVarianceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/yoy_comparison": {
+      "post": {
+        "summary": "Yoy Comparison",
+        "description": "Year-over-year performance comparison",
+        "operationId": "yoy_comparison_tools_yoy_comparison_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/YoYComparisonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/cost_center_pl": {
+      "post": {
+        "summary": "Cost Center Pl",
+        "description": "Generate P&L by cost center",
+        "operationId": "cost_center_pl_tools_cost_center_pl_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CostCenterPLRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/close_period": {
+      "post": {
+        "summary": "Close Period",
+        "description": "Close the accounting period - POC VERSION\n\nThis tool:\n- Checks that ALL generated approvals have been processed (ignores actual data)\n- Locks the period based on approval status only\n- Generates final financial statements\n- Sends email reports if requested",
+        "operationId": "close_period_tools_close_period_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonthEndCloseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/get_missing_cost_centers/{fiscal_period}": {
+      "get": {
+        "summary": "Get Missing Cost Centers",
+        "description": "Get list of transactions with missing cost centers",
+        "operationId": "get_missing_cost_centers_tools_get_missing_cost_centers__fiscal_period__get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/suggest_cost_centers": {
+      "post": {
+        "summary": "Suggest Cost Centers",
+        "description": "Store agent's cost center suggestions in approval items for user review.\nThis does NOT update the CSV - only prepares suggestions for approval.",
+        "operationId": "suggest_cost_centers_tools_suggest_cost_centers_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CostCenterSuggestionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/get_overdue_invoices": {
+      "get": {
+        "summary": "Get Overdue Invoices",
+        "description": "Get list of overdue invoices requiring collection action",
+        "operationId": "get_overdue_invoices_tools_get_overdue_invoices_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cfo/financial_dashboard": {
+      "get": {
+        "summary": "Cfo Financial Dashboard",
+        "description": "Comprehensive CFO financial dashboard with actual financial data\nShows trial balance, P&L, budget variances, and key financial metrics with summary and forecast",
+        "operationId": "cfo_financial_dashboard_cfo_financial_dashboard_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Fiscal period to display",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            },
+            "description": "Fiscal period to display"
+          },
+          {
+            "name": "entity_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Entity code",
+              "default": "AUS01",
+              "title": "Entity Code"
+            },
+            "description": "Entity code"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports/email": {
+      "post": {
+        "summary": "Send Financial Reports",
+        "description": "Send financial reports via email with PDF/CSV attachments and summary",
+        "operationId": "send_financial_reports_reports_email_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports/email/send-test": {
+      "get": {
+        "summary": "Send Test Email",
+        "description": "Send a test email with sample reports and summary",
+        "operationId": "send_test_email_reports_email_send_test_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "entity_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "AUS01",
+              "title": "Entity Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports/email/preview": {
+      "get": {
+        "summary": "Preview Email Report",
+        "description": "Preview what would be sent in the email (HTML preview with summary)",
+        "operationId": "preview_email_report_reports_email_preview_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "entity_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "AUS01",
+              "title": "Entity Code"
+            }
+          },
+          {
+            "name": "report_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "trial_balance,income_statement,balance_sheet,ar_aging,budget_variance",
+              "title": "Report Types"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports/email/status": {
+      "get": {
+        "summary": "Check Email Config",
+        "description": "Check email configuration status",
+        "operationId": "check_email_config_reports_email_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/intercompany/reconcile": {
+      "post": {
+        "summary": "Intercompany Reconcile",
+        "description": "Perform intercompany reconciliation analysis for the specified period\nIdentifies variances, matches transactions, and generates elimination recommendations",
+        "operationId": "intercompany_reconcile_tools_intercompany_reconcile_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntercompanyReconciliationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/intercompany/transactions": {
+      "get": {
+        "summary": "Get Intercompany Transactions",
+        "description": "Get intercompany transactions with optional filters",
+        "operationId": "get_intercompany_transactions_tools_intercompany_transactions_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by entity",
+              "title": "Entity"
+            },
+            "description": "Filter by entity"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status",
+              "title": "Status"
+            },
+            "description": "Filter by status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/intercompany/post_eliminations": {
+      "post": {
+        "summary": "Post Intercompany Eliminations",
+        "description": "Post approved intercompany elimination journals to GL",
+        "operationId": "post_intercompany_eliminations_tools_intercompany_post_eliminations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntercompanyEliminationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/intercompany/resolve_variance": {
+      "post": {
+        "summary": "Resolve Intercompany Variance",
+        "description": "Resolve an intercompany variance with approved action",
+        "operationId": "resolve_intercompany_variance_tools_intercompany_resolve_variance_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntercompanyVarianceResolution"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/accruals/analyze": {
+      "post": {
+        "summary": "Analyze Accruals Prepayments",
+        "description": "Analyze accruals and prepayments for the specified period\nIdentifies variances, material items, and generates adjustment recommendations",
+        "operationId": "analyze_accruals_prepayments_tools_accruals_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccrualsPrepaymentsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/accruals/list": {
+      "get": {
+        "summary": "Get Accruals",
+        "description": "Get accruals with optional filters",
+        "operationId": "get_accruals_tools_accruals_list_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status",
+              "title": "Status"
+            },
+            "description": "Filter by status"
+          },
+          {
+            "name": "materiality",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by materiality",
+              "title": "Materiality"
+            },
+            "description": "Filter by materiality"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/prepayments/list": {
+      "get": {
+        "summary": "Get Prepayments",
+        "description": "Get prepayments with optional filters",
+        "operationId": "get_prepayments_tools_prepayments_list_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status",
+              "title": "Status"
+            },
+            "description": "Filter by status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/accruals/post_adjustments": {
+      "post": {
+        "summary": "Post Accrual Adjustments",
+        "description": "Post approved accrual adjustment journals",
+        "operationId": "post_accrual_adjustments_tools_accruals_post_adjustments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccrualAdjustmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/bank/reconcile": {
+      "post": {
+        "summary": "Bank Reconciliation",
+        "description": "Perform bank reconciliation analysis for the specified period\nIdentifies reconciling items, variances, and generates recommendations",
+        "operationId": "bank_reconciliation_tools_bank_reconcile_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BankReconciliationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/bank/items": {
+      "get": {
+        "summary": "Get Bank Reconciliation Items",
+        "description": "Get bank reconciliation items with optional filters",
+        "operationId": "get_bank_reconciliation_items_tools_bank_items_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "item_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by item type",
+              "title": "Item Type"
+            },
+            "description": "Filter by item type"
+          },
+          {
+            "name": "materiality",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by materiality",
+              "title": "Materiality"
+            },
+            "description": "Filter by materiality"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/bank/positions": {
+      "get": {
+        "summary": "Get Bank Positions",
+        "description": "Get bank and GL positions for all accounts",
+        "operationId": "get_bank_positions_tools_bank_positions_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "entity_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by entity",
+              "title": "Entity Code"
+            },
+            "description": "Filter by entity"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/bank/post_journals": {
+      "post": {
+        "summary": "Post Bank Reconciliation Journals",
+        "description": "Post approved bank reconciliation journals to GL",
+        "operationId": "post_bank_reconciliation_journals_tools_bank_post_journals_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JournalEntryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/bank/resolve_item": {
+      "post": {
+        "summary": "Resolve Bank Reconciliation Item",
+        "description": "Resolve a bank reconciliation item (mark as resolved, post journal, etc.)",
+        "operationId": "resolve_bank_reconciliation_item_tools_bank_resolve_item_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BankReconciliationItemResolution"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/close/status": {
+      "get": {
+        "summary": "Get Close Status",
+        "description": "Get combined status of all close activities",
+        "operationId": "get_close_status_tools_close_status_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/pl/statement": {
+      "get": {
+        "summary": "Generate Pl Statement",
+        "description": "Generate CFO-ready Profit & Loss statement with standard sections",
+        "operationId": "generate_pl_statement_tools_pl_statement_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/pl/transactions": {
+      "get": {
+        "summary": "Get Pl Transactions",
+        "description": "Get P&L transactions filtered by section",
+        "operationId": "get_pl_transactions_tools_pl_transactions_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "section",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Section"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/pl/approval_items": {
+      "get": {
+        "summary": "Get Pl Approval Items",
+        "description": "Get P&L items requiring CFO approval before close",
+        "operationId": "get_pl_approval_items_tools_pl_approval_items_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/pl/gl_reconciliation": {
+      "get": {
+        "summary": "Reconcile Pl To Gl",
+        "description": "Reconcile P&L totals back to Enhanced GL",
+        "operationId": "reconcile_pl_to_gl_tools_pl_gl_reconciliation_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/pl/variance_analysis": {
+      "get": {
+        "summary": "Analyze Pl Variances",
+        "description": "Analyze variances flagged in the P&L data",
+        "operationId": "analyze_pl_variances_tools_pl_variance_analysis_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/workforce/cost_revenue_correlation": {
+      "get": {
+        "summary": "Analyze Workforce Cost Revenue",
+        "description": "Correlate workforce cost with revenue/output by business unit",
+        "operationId": "analyze_workforce_cost_revenue_tools_workforce_cost_revenue_correlation_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "business_unit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Business Unit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/workforce/salary_analysis": {
+      "get": {
+        "summary": "Analyze Salary Costs",
+        "description": "Analyze salary costs by department, identify unusual patterns and compliance risks",
+        "operationId": "analyze_salary_costs_tools_workforce_salary_analysis_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/workforce/cost_output_efficiency": {
+      "get": {
+        "summary": "Analyze Workforce Efficiency",
+        "description": "Identify areas where workforce cost increases without output/utilisation improvement",
+        "operationId": "analyze_workforce_efficiency_tools_workforce_cost_output_efficiency_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/workforce/resource_optimization": {
+      "get": {
+        "summary": "Optimize Resource Allocation",
+        "description": "Generate resource allocation recommendations to improve utilisation and margin",
+        "operationId": "optimize_resource_allocation_tools_workforce_resource_optimization_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/workforce/labour_cost_metrics": {
+      "get": {
+        "summary": "Calculate Labour Cost Metrics",
+        "description": "Calculate labour cost per output metrics with filtering by business unit",
+        "operationId": "calculate_labour_cost_metrics_tools_workforce_labour_cost_metrics_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "business_unit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Business Unit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/esg/leakage_detection": {
+      "get": {
+        "summary": "Detect Esg Leakage",
+        "description": "Detect ESG cost leakage and misclassification",
+        "operationId": "detect_esg_leakage_tools_esg_leakage_detection_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/esg/financial_impact": {
+      "get": {
+        "summary": "Analyze Esg Financial Impact",
+        "description": "Analyze ESG impact on working capital, margins, and cash flow",
+        "operationId": "analyze_esg_financial_impact_tools_esg_financial_impact_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/esg/disclosure_readiness": {
+      "get": {
+        "summary": "Assess Disclosure Readiness",
+        "description": "Assess ESG disclosure readiness and auditability",
+        "operationId": "assess_disclosure_readiness_tools_esg_disclosure_readiness_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/esg/scenario_modeling": {
+      "get": {
+        "summary": "Model Esg Scenario",
+        "description": "Simulate sustainability target increases and model impacts on cost structure and margins",
+        "operationId": "model_esg_scenario_tools_esg_scenario_modeling_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "target_increase_percent",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 30,
+              "minimum": 5,
+              "default": 15,
+              "title": "Target Increase Percent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/esg/board_narrative": {
+      "get": {
+        "summary": "Generate Board Narrative",
+        "description": "Generate board-ready ESG performance narrative linking outcomes to financial performance",
+        "operationId": "generate_board_narrative_tools_esg_board_narrative_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/esg/kpi_tracking": {
+      "get": {
+        "summary": "Track Esg Kpis",
+        "description": "Track ESG KPI attainment vs targets across categories",
+        "operationId": "track_esg_kpis_tools_esg_kpi_tracking_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-03",
+              "title": "Fiscal Period"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/ibm_bob/summary/{fiscal_period}": {
+      "get": {
+        "summary": "Get Ibm Bob Summary",
+        "description": "Get consolidated summary of all IBM BOB datasets with key metrics and readiness score",
+        "operationId": "get_ibm_bob_summary_tools_ibm_bob_summary__fiscal_period__get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/progress": {
+      "get": {
+        "summary": "Close Progress Dashboard",
+        "description": "Comprehensive close progress dashboard - FIXED VERSION",
+        "operationId": "close_progress_dashboard_dashboard_progress_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/close/progress": {
+      "get": {
+        "summary": "Get Close Progress Api",
+        "description": "CORRECTED: API endpoint to get close progress data as JSON (for auto-refresh)",
+        "operationId": "get_close_progress_api_api_close_progress_get",
+        "parameters": [
+          {
+            "name": "fiscal_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "2026-04",
+              "title": "Fiscal Period"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ARVarianceRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "example": "2026-04"
+          },
+          "entity_code": {
+            "type": "string",
+            "title": "Entity Code",
+            "default": "AUS01",
+            "example": "AUS01"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fiscal_period"
+        ],
+        "title": "ARVarianceRequest"
+      },
+      "AccrualAdjustmentRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "description": "Fiscal period",
+            "default": "2026-04"
+          },
+          "accrual_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Accrual Ids"
+          },
+          "approved_by": {
+            "type": "string",
+            "title": "Approved By"
+          },
+          "comments": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "accrual_ids",
+          "approved_by"
+        ],
+        "title": "AccrualAdjustmentRequest"
+      },
+      "AccrualsPrepaymentsRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "description": "Fiscal period for analysis",
+            "default": "2026-04"
+          },
+          "entity_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Code",
+            "description": "Filter by entity (optional)"
+          }
+        },
+        "type": "object",
+        "title": "AccrualsPrepaymentsRequest"
+      },
+      "ApprovalAssignmentRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "assignee_email": {
+            "type": "string",
+            "format": "email",
+            "title": "Assignee Email"
+          },
+          "assignee_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assignee Name"
+          },
+          "assigner": {
+            "type": "string",
+            "title": "Assigner"
+          },
+          "comments": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "assignee_email",
+          "assigner"
+        ],
+        "title": "ApprovalAssignmentRequest"
+      },
+      "ApprovalBatchRequest": {
+        "properties": {
+          "tokens": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tokens"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "reviewer": {
+            "type": "string",
+            "title": "Reviewer"
+          },
+          "comments": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tokens",
+          "approved",
+          "reviewer"
+        ],
+        "title": "ApprovalBatchRequest"
+      },
+      "BankReconciliationItemResolution": {
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "title": "Item Id"
+          },
+          "resolution_action": {
+            "type": "string",
+            "title": "Resolution Action"
+          },
+          "approved_by": {
+            "type": "string",
+            "title": "Approved By"
+          },
+          "comments": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "item_id",
+          "resolution_action",
+          "approved_by"
+        ],
+        "title": "BankReconciliationItemResolution"
+      },
+      "BankReconciliationRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "description": "Fiscal period for reconciliation",
+            "default": "2026-04"
+          },
+          "entity_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Code",
+            "description": "Filter by entity (optional)"
+          }
+        },
+        "type": "object",
+        "title": "BankReconciliationRequest"
+      },
+      "BudgetVarianceRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "example": "2026-04"
+          },
+          "entity_code": {
+            "type": "string",
+            "title": "Entity Code",
+            "default": "AUS01",
+            "example": "AUS01"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fiscal_period"
+        ],
+        "title": "BudgetVarianceRequest"
+      },
+      "CostCenterAssignment": {
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "title": "Transaction Id"
+          },
+          "cost_center": {
+            "type": "string",
+            "title": "Cost Center"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transaction_id",
+          "cost_center"
+        ],
+        "title": "CostCenterAssignment"
+      },
+      "CostCenterBatchRequest": {
+        "properties": {
+          "assignments": {
+            "items": {
+              "$ref": "#/components/schemas/CostCenterAssignment"
+            },
+            "type": "array",
+            "title": "Assignments"
+          },
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "example": "2026-04"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assignments",
+          "fiscal_period"
+        ],
+        "title": "CostCenterBatchRequest"
+      },
+      "CostCenterPLRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "example": "2026-04"
+          },
+          "entity_code": {
+            "type": "string",
+            "title": "Entity Code",
+            "default": "AUS01",
+            "example": "AUS01"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fiscal_period"
+        ],
+        "title": "CostCenterPLRequest"
+      },
+      "CostCenterSuggestion": {
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "title": "Transaction Id"
+          },
+          "suggested_cost_center": {
+            "type": "string",
+            "title": "Suggested Cost Center"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "example": "Vendor pattern: Zoom → IT"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Confidence",
+            "default": 0.9
+          }
+        },
+        "type": "object",
+        "required": [
+          "transaction_id",
+          "suggested_cost_center",
+          "reason"
+        ],
+        "title": "CostCenterSuggestion"
+      },
+      "CostCenterSuggestionsRequest": {
+        "properties": {
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/CostCenterSuggestion"
+            },
+            "type": "array",
+            "title": "Suggestions"
+          },
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "example": "2026-04"
+          }
+        },
+        "type": "object",
+        "required": [
+          "suggestions",
+          "fiscal_period"
+        ],
+        "title": "CostCenterSuggestionsRequest"
+      },
+      "EmailRecipient": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "title": "EmailRecipient"
+      },
+      "EmailReportRequest": {
+        "properties": {
+          "recipients": {
+            "items": {
+              "$ref": "#/components/schemas/EmailRecipient"
+            },
+            "type": "array",
+            "title": "Recipients"
+          },
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "description": "Fiscal period for reports",
+            "default": "2026-04"
+          },
+          "entity_code": {
+            "type": "string",
+            "title": "Entity Code",
+            "description": "Entity code",
+            "default": "AUS01"
+          },
+          "include_pdf": {
+            "type": "boolean",
+            "title": "Include Pdf",
+            "description": "Include PDF report",
+            "default": true
+          },
+          "include_csv": {
+            "type": "boolean",
+            "title": "Include Csv",
+            "description": "Include CSV data",
+            "default": true
+          },
+          "report_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Report Types",
+            "description": "Types of reports to include",
+            "default": [
+              "trial_balance",
+              "income_statement",
+              "balance_sheet",
+              "ar_aging",
+              "budget_variance"
+            ]
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recipients"
+        ],
+        "title": "EmailReportRequest"
+      },
+      "EmailReportResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "email_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Id"
+          },
+          "recipients": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recipients"
+          },
+          "reports_sent": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reports Sent"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "recipients",
+          "reports_sent"
+        ],
+        "title": "EmailReportResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "IntercompanyEliminationRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "description": "Fiscal period",
+            "default": "2026-04"
+          },
+          "journal_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Journal Ids",
+            "description": "Specific journal IDs to post"
+          },
+          "approve_all": {
+            "type": "boolean",
+            "title": "Approve All",
+            "description": "Approve all pending elimination journals",
+            "default": false
+          },
+          "approved_by": {
+            "type": "string",
+            "title": "Approved By",
+            "description": "Name of approver"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approved_by"
+        ],
+        "title": "IntercompanyEliminationRequest"
+      },
+      "IntercompanyReconciliationRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "description": "Fiscal period for reconciliation",
+            "default": "2026-04"
+          },
+          "entity_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Code",
+            "description": "Filter by specific entity (optional)"
+          }
+        },
+        "type": "object",
+        "title": "IntercompanyReconciliationRequest"
+      },
+      "IntercompanyVarianceResolution": {
+        "properties": {
+          "variance_id": {
+            "type": "string",
+            "title": "Variance Id"
+          },
+          "resolution_action": {
+            "type": "string",
+            "title": "Resolution Action"
+          },
+          "approved_by": {
+            "type": "string",
+            "title": "Approved By"
+          },
+          "comments": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "variance_id",
+          "resolution_action",
+          "approved_by"
+        ],
+        "title": "IntercompanyVarianceResolution"
+      },
+      "JournalEntry": {
+        "properties": {
+          "entry_id": {
+            "type": "string",
+            "title": "Entry Id"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "debit_account": {
+            "type": "string",
+            "title": "Debit Account"
+          },
+          "credit_account": {
+            "type": "string",
+            "title": "Credit Account"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved",
+            "default": false
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entry_id",
+          "date",
+          "description",
+          "debit_account",
+          "credit_account",
+          "amount"
+        ],
+        "title": "JournalEntry"
+      },
+      "JournalEntryRequest": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/JournalEntry"
+            },
+            "type": "array",
+            "title": "Entries"
+          },
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "example": "2026-04"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entries",
+          "fiscal_period"
+        ],
+        "title": "JournalEntryRequest"
+      },
+      "MonthEndCloseRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "example": "2026-04"
+          },
+          "entity_code": {
+            "type": "string",
+            "title": "Entity Code",
+            "default": "AUS01",
+            "example": "AUS01"
+          },
+          "approved_by": {
+            "type": "string",
+            "title": "Approved By"
+          },
+          "send_email_reports": {
+            "type": "boolean",
+            "title": "Send Email Reports",
+            "description": "Send email reports after closing",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "fiscal_period",
+          "approved_by"
+        ],
+        "title": "MonthEndCloseRequest"
+      },
+      "ToolResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "exceptions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exceptions"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "title": "ToolResponse"
+      },
+      "TrialBalanceRequest": {
+        "properties": {
+          "fiscal_period": {
+            "type": "string",
+            "title": "Fiscal Period",
+            "example": "2026-04"
+          },
+          "entity_code": {
+            "type": "string",
+            "title": "Entity Code",
+            "default": "AUS01",
+            "example": "AUS01"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fiscal_period"
+        ],
+        "title": "TrialBalanceRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "YoYComparisonRequest": {
+        "properties": {
+          "current_period": {
+            "type": "string",
+            "title": "Current Period",
+            "example": "2026-04"
+          },
+          "comparison_period": {
+            "type": "string",
+            "title": "Comparison Period",
+            "example": "2025-04"
+          },
+          "entity_code": {
+            "type": "string",
+            "title": "Entity Code",
+            "default": "AUS01",
+            "example": "AUS01"
+          }
+        },
+        "type": "object",
+        "required": [
+          "current_period",
+          "comparison_period"
+        ],
+        "title": "YoYComparisonRequest"
+      }
+    }
+  }
+}
