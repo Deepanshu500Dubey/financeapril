@@ -116,11 +116,11 @@ class ToolResponse(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
 
 class TrialBalanceRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-04")
+    fiscal_period: str = Field(..., example="2026-05")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class ARVarianceRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-04")
+    fiscal_period: str = Field(..., example="2026-05")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class CostCenterAssignment(BaseModel):
@@ -130,7 +130,7 @@ class CostCenterAssignment(BaseModel):
 
 class CostCenterBatchRequest(BaseModel):
     assignments: List[CostCenterAssignment]
-    fiscal_period: str = Field(..., example="2026-04")
+    fiscal_period: str = Field(..., example="2026-05")
 
 class CostCenterSuggestion(BaseModel):
     transaction_id: str
@@ -140,7 +140,7 @@ class CostCenterSuggestion(BaseModel):
 
 class CostCenterSuggestionsRequest(BaseModel):
     suggestions: List[CostCenterSuggestion]
-    fiscal_period: str = Field(..., example="2026-04")
+    fiscal_period: str = Field(..., example="2026-05")
 
 
 class JournalEntry(BaseModel):
@@ -155,23 +155,23 @@ class JournalEntry(BaseModel):
 
 class JournalEntryRequest(BaseModel):
     entries: List[JournalEntry]
-    fiscal_period: str = Field(..., example="2026-04")
+    fiscal_period: str = Field(..., example="2026-05")
 
 class BudgetVarianceRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-04")
+    fiscal_period: str = Field(..., example="2026-05")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class YoYComparisonRequest(BaseModel):
-    current_period: str = Field(..., example="2026-04")
+    current_period: str = Field(..., example="2026-05")
     comparison_period: str = Field(..., example="2025-04")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class CostCenterPLRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-04")
+    fiscal_period: str = Field(..., example="2026-05")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class MonthEndCloseRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-04")
+    fiscal_period: str = Field(..., example="2026-05")
     entity_code: str = Field(default="AUS01", example="AUS01")
     approved_by: str
     send_email_reports: bool = Field(True, description="Send email reports after closing")
@@ -221,7 +221,7 @@ class EmailRecipient(BaseModel):
 
 class EmailReportRequest(BaseModel):
     recipients: List[EmailRecipient]
-    fiscal_period: str = Field("2026-04", description="Fiscal period for reports")
+    fiscal_period: str = Field("2026-05", description="Fiscal period for reports")
     entity_code: str = Field("AUS01", description="Entity code")
     include_pdf: bool = Field(True, description="Include PDF report")
     include_csv: bool = Field(True, description="Include CSV data")
@@ -294,7 +294,7 @@ class ApprovalRegistry:
             'description': approval_item.description[:100],
             'amount': str(approval_item.amount) if approval_item.amount else '',
             'created_at': datetime.now().isoformat(),
-            'fiscal_period': approval_item.metadata.get('fiscal_period', '2026-04') if approval_item.metadata else '2026-04',
+            'fiscal_period': approval_item.metadata.get('fiscal_period', '2026-05') if approval_item.metadata else '2026-05',
             'entity': approval_item.metadata.get('entity', 'AUS01') if approval_item.metadata else 'AUS01',
             'status': 'PENDING',
             'metadata_summary': self._summarize_metadata(approval_item.metadata)
@@ -408,7 +408,7 @@ approval_registry = ApprovalRegistry()
 
 def update_progress_from_approvals():
     """Helper to update progress milestones after approvals"""
-    update_milestones_from_approvals("2026-04")
+    update_milestones_from_approvals("2026-05")
 
 # ============================================================================
 # DATA STORES (In-memory for demo - use database in production)
@@ -473,7 +473,7 @@ def create_approval_item(
     account: Optional[str] = None,
     cost_center: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
-    fiscal_period: str = "2026-04"
+    fiscal_period: str = "2026-05"
 ) -> ApprovalItem:
     """Create and store a new approval item"""
     item_id = str(uuid.uuid4())[:8]
@@ -975,7 +975,7 @@ class CloseProgressTracker:
 # Initialize progress tracker
 progress_tracker = CloseProgressTracker()
 
-def update_milestones_from_approvals(fiscal_period: str = "2026-04"):
+def update_milestones_from_approvals(fiscal_period: str = "2026-05"):
     """
     Update milestone progress based on approval registry data.
     Final Trial Balance is calculated from OTHER milestones, not approvals.
@@ -1045,10 +1045,10 @@ def update_milestones_from_approvals(fiscal_period: str = "2026-04"):
 
 def update_progress_from_approvals():
     """Helper to update progress milestones after approvals"""
-    update_milestones_from_approvals("2026-04")
+    update_milestones_from_approvals("2026-05")
 
 
-def analyze_close_readiness(fiscal_period: str = "2026-04") -> Dict[str, Any]:
+def analyze_close_readiness(fiscal_period: str = "2026-05") -> Dict[str, Any]:
     """
     CORRECTED: Comprehensive analysis of close readiness based on current state.
     
@@ -1408,9 +1408,9 @@ def generate_trial_balance_data(fiscal_period: str, entity_code: str) -> Dict[st
     """Helper function to generate trial balance data"""
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         coa = load_coa()
-        ar_records = load_csv_data('AR_Subledger_Mar2026.csv')
+        ar_records = load_csv_data('AR_Subledger_May2026.csv')
         
         # Filter transactions for the period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -1570,10 +1570,10 @@ def generate_pdf_report(
     
     # Load data
     try:
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         coa = load_coa()
-        ar_records = load_csv_data('AR_Subledger_Mar2026.csv')
-        budget_data = load_csv_data('Budget_Mar2026_Detailed.csv')
+        ar_records = load_csv_data('AR_Subledger_May2026.csv')
+        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
         
         # Filter for period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -1848,10 +1848,10 @@ def generate_csv_report(fiscal_period: str, report_type: str) -> str:
     writer = csv.writer(output)
     
     # Load data
-    transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+    transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
     coa = load_coa()
-    ar_records = load_csv_data('AR_Subledger_Mar2026.csv')
-    budget_data = load_csv_data('Budget_Mar2026_Detailed.csv')
+    ar_records = load_csv_data('AR_Subledger_May2026.csv')
+    budget_data = load_csv_data('Budget_May2026_Detailed.csv')
     
     # Filter for period
     period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -3525,7 +3525,7 @@ async def decide_approval(
     history_record['reviewer'] = reviewer
     history_record['comments'] = comments
     history_record['decision'] = 'approved' if approved else 'rejected'
-    history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-04') if item.metadata else '2026-04'
+    history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-05') if item.metadata else '2026-05'
     approval_history.append(history_record)
     
     # UPDATE REGISTRY
@@ -3618,7 +3618,7 @@ async def batch_approve(request: ApprovalBatchRequest):
             history_record['reviewer'] = request.reviewer
             history_record['comments'] = request.comments
             history_record['decision'] = 'approved' if request.approved else 'rejected'
-            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-04') if item.metadata else '2026-04'
+            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-05') if item.metadata else '2026-05'
             approval_history.append(history_record)
             
             # UPDATE REGISTRY
@@ -3681,7 +3681,7 @@ async def approve_all_pending(
             history_record['reviewer'] = reviewer
             history_record['comments'] = comments
             history_record['decision'] = 'approved'
-            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-04') if item.metadata else '2026-04'
+            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-05') if item.metadata else '2026-05'
             approval_history.append(history_record)
             
             # UPDATE REGISTRY
@@ -3745,7 +3745,7 @@ async def reject_all_pending(
             history_record['reviewer'] = reviewer
             history_record['comments'] = comments
             history_record['decision'] = 'rejected'
-            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-04') if item.metadata else '2026-04'
+            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-05') if item.metadata else '2026-05'
             approval_history.append(history_record)
             
             # UPDATE REGISTRY
@@ -4019,10 +4019,10 @@ def initial_assessment(request: TrialBalanceRequest):
     """
     try:
         # Load all data files
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         coa = load_coa()
         cost_centers_data = load_csv_data('Master_CostCenters_States.csv')
-        ar_records = load_csv_data('AR_Subledger_Mar2026.csv')
+        ar_records = load_csv_data('AR_Subledger_May2026.csv')
         
         # Filter for the requested period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == request.fiscal_period]
@@ -4149,8 +4149,8 @@ def analyze_ar_variance(request: ARVarianceRequest):
     """
     try:
         # Load data
-        ar_records = load_csv_data('AR_Subledger_Mar2026.csv')
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        ar_records = load_csv_data('AR_Subledger_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         
         # Filter GL transactions for AR account
         period_txns = [t for t in transactions if t['Fiscal_Period'] == request.fiscal_period]
@@ -4288,7 +4288,7 @@ def assign_cost_centers(request: CostCenterBatchRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         cost_centers_data = load_csv_data('Master_CostCenters_States.csv')
         valid_cost_centers = [cc['Cost_Center_Code'] for cc in cost_centers_data]
         
@@ -4363,7 +4363,7 @@ def assign_cost_centers(request: CostCenterBatchRequest):
         # Save updated transactions
         if updated_count > 0:
             fieldnames = list(transactions[0].keys())
-            save_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv', transactions, fieldnames)
+            save_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv', transactions, fieldnames)
             logger.info(f"Saved {updated_count} cost center assignments to CSV")
         
         # Clean up approved items from pending_approvals
@@ -4399,7 +4399,7 @@ def post_journal_entries(request: JournalEntryRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         coa = load_coa()
         
         # Check if entries are approved using registry
@@ -4495,7 +4495,7 @@ def post_journal_entries(request: JournalEntryRequest):
         
         # Save updated transactions
         fieldnames = list(transactions[0].keys())
-        save_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv', transactions, fieldnames)
+        save_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv', transactions, fieldnames)
         
         return ToolResponse(
             success=True,
@@ -4520,8 +4520,8 @@ def budget_variance_analysis(request: BudgetVarianceRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
-        budget_data = load_csv_data('Budget_Mar2026_Detailed.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
         coa = load_coa()
         
         # Filter period transactions
@@ -4617,7 +4617,7 @@ def yoy_comparison(request: YoYComparisonRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         prior_year_data = load_csv_data('PL_Statement_Mar2025_Comparative.csv')
         coa = load_coa()
         
@@ -4681,7 +4681,7 @@ def cost_center_pl(request: CostCenterPLRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         coa = load_coa()
         
         # Filter period transactions
@@ -4904,7 +4904,7 @@ def get_missing_cost_centers(fiscal_period: str):
     Get list of transactions with missing cost centers
     """
     try:
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
         
         missing = []
@@ -5055,7 +5055,7 @@ def get_overdue_invoices():
     Get list of overdue invoices requiring collection action
     """
     try:
-        ar_records = load_csv_data('AR_Subledger_Mar2026.csv')
+        ar_records = load_csv_data('AR_Subledger_May2026.csv')
         
         overdue = []
         for record in ar_records:
@@ -5102,7 +5102,7 @@ def get_overdue_invoices():
                                 "days_outstanding": days_outstanding,
                                 "due_date": record['Due_Date']
                             },
-                            fiscal_period="2026-04"
+                            fiscal_period="2026-05"
                         )
                         invoice_data['approval_token'] = approval_item.token
                         invoice_data['approval_links'] = get_approval_links(approval_item.token)
@@ -5137,7 +5137,7 @@ def get_overdue_invoices():
 
 @app.get("/cfo/financial_dashboard", response_class=HTMLResponse)
 async def cfo_financial_dashboard(
-    fiscal_period: str = Query("2026-04", description="Fiscal period to display"),
+    fiscal_period: str = Query("2026-05", description="Fiscal period to display"),
     entity_code: str = Query("AUS01", description="Entity code")
 ):
     """
@@ -5155,10 +5155,10 @@ async def cfo_financial_dashboard(
             logger.warning(f"Could not load logo: {e}")
         
         # Load financial data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         coa = load_coa()
-        budget_data = load_csv_data('Budget_Mar2026_Detailed.csv')
-        ar_records = load_csv_data('AR_Subledger_Mar2026.csv')
+        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
+        ar_records = load_csv_data('AR_Subledger_May2026.csv')
         
         # Filter for the period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -6455,10 +6455,10 @@ async def send_financial_reports(
     summary_html = ""
     try:
         # Load data for summary
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         coa = load_coa()
-        ar_records = load_csv_data('AR_Subledger_Mar2026.csv')
-        budget_data = load_csv_data('Budget_Mar2026_Detailed.csv')
+        ar_records = load_csv_data('AR_Subledger_May2026.csv')
+        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
         
         # Filter for period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == request.fiscal_period]
@@ -6688,7 +6688,7 @@ async def send_financial_reports(
 @app.get("/reports/email/send-test")
 async def send_test_email(
     background_tasks: BackgroundTasks,
-    fiscal_period: str = Query("2026-04"),
+    fiscal_period: str = Query("2026-05"),
     entity_code: str = Query("AUS01")
 ):
     """
@@ -6712,7 +6712,7 @@ async def send_test_email(
 
 @app.get("/reports/email/preview", response_class=HTMLResponse)
 async def preview_email_report(
-    fiscal_period: str = Query("2026-04"),
+    fiscal_period: str = Query("2026-05"),
     entity_code: str = Query("AUS01"),
     report_types: str = Query("trial_balance,income_statement,balance_sheet,ar_aging,budget_variance")
 ):
@@ -6733,10 +6733,10 @@ async def preview_email_report(
     summary_html = ""
     try:
         # Load data for summary
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Mar2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
         coa = load_coa()
-        ar_records = load_csv_data('AR_Subledger_Mar2026.csv')
-        budget_data = load_csv_data('Budget_Mar2026_Detailed.csv')
+        ar_records = load_csv_data('AR_Subledger_May2026.csv')
+        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
         
         # Filter for period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -6960,11 +6960,11 @@ async def check_email_config():
 
 # Data Models
 class IntercompanyReconciliationRequest(BaseModel):
-    fiscal_period: str = Field("2026-04", description="Fiscal period for reconciliation")
+    fiscal_period: str = Field("2026-05", description="Fiscal period for reconciliation")
     entity_code: Optional[str] = Field(None, description="Filter by specific entity (optional)")
 
 class IntercompanyEliminationRequest(BaseModel):
-    fiscal_period: str = Field("2026-04", description="Fiscal period")
+    fiscal_period: str = Field("2026-05", description="Fiscal period")
     journal_ids: Optional[List[str]] = Field(None, description="Specific journal IDs to post")
     approve_all: bool = Field(False, description="Approve all pending elimination journals")
     approved_by: str = Field(..., description="Name of approver")
@@ -6987,9 +6987,9 @@ async def intercompany_reconcile(request: IntercompanyReconciliationRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Intercompany_Transactions_Mar2026.csv')
-        reconciliation = load_csv_data('Intercompany_Reconciliation_Mar2026.csv')
-        elimination_journals = load_csv_data('Intercompany_Elimination_Journals_Mar2026.csv')
+        transactions = load_csv_data('Intercompany_Transactions_May2026.csv')
+        reconciliation = load_csv_data('Intercompany_Reconciliation_May2026.csv')
+        elimination_journals = load_csv_data('Intercompany_Elimination_Journals_May2026.csv')
         
         # Filter for period
         period_txns = [t for t in transactions if t.get('Period') == request.fiscal_period]
@@ -7151,7 +7151,7 @@ async def intercompany_reconcile(request: IntercompanyReconciliationRequest):
 
 @app.get("/tools/intercompany/transactions", response_model=ToolResponse)
 async def get_intercompany_transactions(
-    fiscal_period: str = Query("2026-04"),
+    fiscal_period: str = Query("2026-05"),
     entity: Optional[str] = Query(None, description="Filter by entity"),
     status: Optional[str] = Query(None, description="Filter by status")
 ):
@@ -7159,7 +7159,7 @@ async def get_intercompany_transactions(
     Get intercompany transactions with optional filters
     """
     try:
-        transactions = load_csv_data('Intercompany_Transactions_Mar2026.csv')
+        transactions = load_csv_data('Intercompany_Transactions_May2026.csv')
         
         # Apply filters
         filtered = [t for t in transactions if t.get('Period') == fiscal_period]
@@ -7194,7 +7194,7 @@ async def post_intercompany_eliminations(request: IntercompanyEliminationRequest
     """
     try:
         # Load elimination journals
-        elimination_journals = load_csv_data('Intercompany_Elimination_Journals_Mar2026.csv')
+        elimination_journals = load_csv_data('Intercompany_Elimination_Journals_May2026.csv')
         
         # Filter for period
         period_journals = [j for j in elimination_journals if j.get('Period') == request.fiscal_period]
@@ -7289,7 +7289,7 @@ async def resolve_intercompany_variance(request: IntercompanyVarianceResolution)
     """
     try:
         # Load reconciliation data
-        reconciliation = load_csv_data('Intercompany_Reconciliation_Mar2026.csv')
+        reconciliation = load_csv_data('Intercompany_Reconciliation_May2026.csv')
         
         # Find and update the variance
         variance_found = False
@@ -7312,7 +7312,7 @@ async def resolve_intercompany_variance(request: IntercompanyVarianceResolution)
         
         # Save updated reconciliation
         fieldnames = list(reconciliation[0].keys())
-        save_csv_data('Intercompany_Reconciliation_Mar2026.csv', reconciliation, fieldnames)
+        save_csv_data('Intercompany_Reconciliation_May2026.csv', reconciliation, fieldnames)
         
         # Clean up any pending approvals
         for token, item in list(pending_approvals.items()):
@@ -7345,11 +7345,11 @@ async def resolve_intercompany_variance(request: IntercompanyVarianceResolution)
 
 # Data Models
 class AccrualsPrepaymentsRequest(BaseModel):
-    fiscal_period: str = Field("2026-04", description="Fiscal period for analysis")
+    fiscal_period: str = Field("2026-05", description="Fiscal period for analysis")
     entity_code: Optional[str] = Field(None, description="Filter by entity (optional)")
 
 class AccrualAdjustmentRequest(BaseModel):
-    fiscal_period: str = Field("2026-04", description="Fiscal period")
+    fiscal_period: str = Field("2026-05", description="Fiscal period")
     accrual_ids: List[str]
     approved_by: str
     comments: Optional[str] = None
@@ -7366,10 +7366,10 @@ async def analyze_accruals_prepayments(request: AccrualsPrepaymentsRequest):
     """
     try:
         # Load data
-        accruals = load_csv_data('Accruals_Register_Mar2026.csv')
-        prepayments = load_csv_data('Prepayments_Register_Mar2026.csv')
-        adjustment_journals = load_csv_data('Accrual_Adjustment_Journals_Mar2026.csv')
-        amortization_journals = load_csv_data('Prepayment_Amortization_Journals_Mar2026.csv')
+        accruals = load_csv_data('Accruals_Register_May2026.csv')
+        prepayments = load_csv_data('Prepayments_Register_May2026.csv')
+        adjustment_journals = load_csv_data('Accrual_Adjustment_Journals_May2026.csv')
+        amortization_journals = load_csv_data('Prepayment_Amortization_Journals_May2026.csv')
         
         # Filter for period
         period_accruals = [a for a in accruals if a.get('Period') == request.fiscal_period]
@@ -7509,7 +7509,7 @@ async def analyze_accruals_prepayments(request: AccrualsPrepaymentsRequest):
 
 @app.get("/tools/accruals/list", response_model=ToolResponse)
 async def get_accruals(
-    fiscal_period: str = Query("2026-04"),
+    fiscal_period: str = Query("2026-05"),
     status: Optional[str] = Query(None, description="Filter by status"),
     materiality: Optional[str] = Query(None, description="Filter by materiality")
 ):
@@ -7517,7 +7517,7 @@ async def get_accruals(
     Get accruals with optional filters
     """
     try:
-        accruals = load_csv_data('Accruals_Register_Mar2026.csv')
+        accruals = load_csv_data('Accruals_Register_May2026.csv')
         
         # Apply filters
         filtered = [a for a in accruals if a.get('Period') == fiscal_period]
@@ -7547,14 +7547,14 @@ async def get_accruals(
 
 @app.get("/tools/prepayments/list", response_model=ToolResponse)
 async def get_prepayments(
-    fiscal_period: str = Query("2026-04"),
+    fiscal_period: str = Query("2026-05"),
     status: Optional[str] = Query(None, description="Filter by status")
 ):
     """
     Get prepayments with optional filters
     """
     try:
-        prepayments = load_csv_data('Prepayments_Register_Mar2026.csv')
+        prepayments = load_csv_data('Prepayments_Register_May2026.csv')
         
         # Apply filters
         filtered = [p for p in prepayments if p.get('Period') == fiscal_period]
@@ -7587,7 +7587,7 @@ async def post_accrual_adjustments(request: AccrualAdjustmentRequest):
     """
     try:
         # Load adjustment journals
-        adjustment_journals = load_csv_data('Accrual_Adjustment_Journals_Mar2026.csv')
+        adjustment_journals = load_csv_data('Accrual_Adjustment_Journals_May2026.csv')
         
         # Find journals for the specified accruals
         journals_to_post = [j for j in adjustment_journals if j.get('Accrual_ID') in request.accrual_ids]
@@ -7638,7 +7638,7 @@ async def post_accrual_adjustments(request: AccrualAdjustmentRequest):
         
         # Save updated journals
         fieldnames = list(adjustment_journals[0].keys())
-        save_csv_data('Accrual_Adjustment_Journals_Mar2026.csv', adjustment_journals, fieldnames)
+        save_csv_data('Accrual_Adjustment_Journals_May2026.csv', adjustment_journals, fieldnames)
         
         return ToolResponse(
             success=True,
@@ -7660,7 +7660,7 @@ async def post_accrual_adjustments(request: AccrualAdjustmentRequest):
 
 # Data Models
 class BankReconciliationRequest(BaseModel):
-    fiscal_period: str = Field("2026-04", description="Fiscal period for reconciliation")
+    fiscal_period: str = Field("2026-05", description="Fiscal period for reconciliation")
     entity_code: Optional[str] = Field(None, description="Filter by entity (optional)")
 
 class BankReconciliationItemResolution(BaseModel):
@@ -7681,10 +7681,10 @@ async def bank_reconciliation(request: BankReconciliationRequest):
     """
     try:
         # Load data
-        bank_statements = load_csv_data('Bank_Statements_Mar2026.csv')
-        gl_cash_balances = load_csv_data('GL_Cash_Balances_Mar2026.csv')
-        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_Mar2026.csv')
-        reconciliation_journals = load_csv_data('Bank_Reconciliation_Journals_Mar2026.csv')
+        bank_statements = load_csv_data('Bank_Statements_May2026.csv')
+        gl_cash_balances = load_csv_data('GL_Cash_Balances_May2026.csv')
+        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_May2026.csv')
+        reconciliation_journals = load_csv_data('Bank_Reconciliation_Journals_May2026.csv')
         
         # Calculate totals
         total_bank_balance = sum(float(gl.get('Statement_Balance_AUD', 0)) for gl in gl_cash_balances)
@@ -7828,7 +7828,7 @@ async def bank_reconciliation(request: BankReconciliationRequest):
 
 @app.get("/tools/bank/items", response_model=ToolResponse)
 async def get_bank_reconciliation_items(
-    fiscal_period: str = Query("2026-04"),
+    fiscal_period: str = Query("2026-05"),
     item_type: Optional[str] = Query(None, description="Filter by item type"),
     materiality: Optional[str] = Query(None, description="Filter by materiality")
 ):
@@ -7836,7 +7836,7 @@ async def get_bank_reconciliation_items(
     Get bank reconciliation items with optional filters
     """
     try:
-        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_Mar2026.csv')
+        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_May2026.csv')
         
         # Apply filters
         filtered = reconciliation_items
@@ -7878,14 +7878,14 @@ async def get_bank_reconciliation_items(
 
 @app.get("/tools/bank/positions", response_model=ToolResponse)
 async def get_bank_positions(
-    fiscal_period: str = Query("2026-04"),
+    fiscal_period: str = Query("2026-05"),
     entity_code: Optional[str] = Query(None, description="Filter by entity")
 ):
     """
     Get bank and GL positions for all accounts
     """
     try:
-        gl_cash_balances = load_csv_data('GL_Cash_Balances_Mar2026.csv')
+        gl_cash_balances = load_csv_data('GL_Cash_Balances_May2026.csv')
         
         # Apply entity filter
         if entity_code:
@@ -7946,7 +7946,7 @@ async def post_bank_reconciliation_journals(
     """
     try:
         # Load existing journals
-        reconciliation_journals = load_csv_data('Bank_Reconciliation_Journals_Mar2026.csv')
+        reconciliation_journals = load_csv_data('Bank_Reconciliation_Journals_May2026.csv')
         
         # Check if entries are approved using registry
         unapproved_entries = []
@@ -8004,7 +8004,7 @@ async def post_bank_reconciliation_journals(
         # Save updated journals
         if updated_count > 0:
             fieldnames = list(reconciliation_journals[0].keys())
-            save_csv_data('Bank_Reconciliation_Journals_Mar2026.csv', reconciliation_journals, fieldnames)
+            save_csv_data('Bank_Reconciliation_Journals_May2026.csv', reconciliation_journals, fieldnames)
         
         return ToolResponse(
             success=True,
@@ -8031,7 +8031,7 @@ async def resolve_bank_reconciliation_item(request: BankReconciliationItemResolu
     """
     try:
         # Load reconciliation items
-        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_Mar2026.csv')
+        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_May2026.csv')
         
         # Find and update the item
         item_found = False
@@ -8053,7 +8053,7 @@ async def resolve_bank_reconciliation_item(request: BankReconciliationItemResolu
         
         # Save updated items
         fieldnames = list(reconciliation_items[0].keys())
-        save_csv_data('Bank_Reconciliation_Items_Mar2026.csv', reconciliation_items, fieldnames)
+        save_csv_data('Bank_Reconciliation_Items_May2026.csv', reconciliation_items, fieldnames)
         
         # Clean up any pending approvals for this item
         for token, approval in list(pending_approvals.items()):
@@ -8085,17 +8085,17 @@ async def resolve_bank_reconciliation_item(request: BankReconciliationItemResolu
 # ============================================================================
 
 @app.get("/tools/close/status", response_model=ToolResponse)
-async def get_close_status(fiscal_period: str = Query("2026-04")):
+async def get_close_status(fiscal_period: str = Query("2026-05")):
     """
     Get combined status of all close activities
     """
     try:
         # Load all data
-        ic_transactions = load_csv_data('Intercompany_Transactions_Mar2026.csv')
-        ic_reconciliation = load_csv_data('Intercompany_Reconciliation_Mar2026.csv')
-        accruals = load_csv_data('Accruals_Register_Mar2026.csv')
-        prepayments = load_csv_data('Prepayments_Register_Mar2026.csv')
-        bank_items = load_csv_data('Bank_Reconciliation_Items_Mar2026.csv')
+        ic_transactions = load_csv_data('Intercompany_Transactions_May2026.csv')
+        ic_reconciliation = load_csv_data('Intercompany_Reconciliation_May2026.csv')
+        accruals = load_csv_data('Accruals_Register_May2026.csv')
+        prepayments = load_csv_data('Prepayments_Register_May2026.csv')
+        bank_items = load_csv_data('Bank_Reconciliation_Items_May2026.csv')
         
         # Filter for period
         ic_rec_period = [r for r in ic_reconciliation if r.get('Period') == fiscal_period]
@@ -8223,20 +8223,20 @@ class IBMBOBSummaryResponse(BaseModel):
 
 IBMBOB_DATA_FILES = {
     'pl': (
-        'IBMBOB_Group_PL_LineItems_Mar2026.csv',
-        'IBMBOB_Group_PL_LineItems_Mar2026_GENERATED.csv',
+        'IBMBOB_Group_PL_LineItems_May2026.csv',
+        'IBMBOB_Group_PL_LineItems_May2026_GENERATED.csv',
     ),
     'workforce': (
         'IBMBOB_Workforce_Cost_Output_Apr2026.csv',  # Your perfect file
         'IBMBOB_Workforce_Cost_Output_Apr2026_GENERATED.csv',
     ),
     'esg': (
-        'IBMBOB_ESG_Cost_KPI_Mar2026.csv',
-        'IBMBOB_ESG_Cost_KPI_Mar2026_GENERATED.csv',
+        'IBMBOB_ESG_Cost_KPI_May2026.csv',
+        'IBMBOB_ESG_Cost_KPI_May2026_GENERATED.csv',
     ),
     'enhanced_gl': (
-        'Raw_GL_Export_With_CostCenters_Mar2026_IBMBOB_Enhanced.csv',
-        'Raw_GL_Export_With_CostCenters_Mar2026_IBMBOB_Enhanced_GENERATED.csv',
+        'Raw_GL_Export_With_CostCenters_May2026_IBMBOB_Enhanced.csv',
+        'Raw_GL_Export_With_CostCenters_May2026_IBMBOB_Enhanced_GENERATED.csv',
     ),
 }
 
@@ -9494,7 +9494,7 @@ def _render_milestones_with_progress_html(milestones: Dict[str, Any]) -> str:
     
 
 @app.get("/dashboard/progress", response_class=HTMLResponse)
-async def close_progress_dashboard(fiscal_period: str = Query("2026-04")):
+async def close_progress_dashboard(fiscal_period: str = Query("2026-05")):
     """
     Comprehensive close progress dashboard - FIXED VERSION
     """
@@ -10208,7 +10208,7 @@ async def close_progress_dashboard(fiscal_period: str = Query("2026-04")):
             </div>
             <div class="period-control">
                 <select id="periodSelect" class="period-select">
-                    <option value="2026-04" {'selected' if fiscal_period == '2026-04' else ''}>April 2026</option>
+                    <option value="2026-05" {'selected' if fiscal_period == '2026-05' else ''}>April 2026</option>
                     <option value="2026-03" {'selected' if fiscal_period == '2026-03' else ''}>March 2026</option>
                     <option value="2026-02" {'selected' if fiscal_period == '2026-02' else ''}>February 2026</option>
                 </select>
@@ -10571,7 +10571,7 @@ def _render_audit_trail_html(approved_items: List[Dict], assigned_items: List[Di
 # ============================================================================
 
 @app.get("/api/close/progress")
-async def get_close_progress_api(fiscal_period: str = Query("2026-04")):
+async def get_close_progress_api(fiscal_period: str = Query("2026-05")):
     """
     CORRECTED: API endpoint to get close progress data as JSON (for auto-refresh)
     """
@@ -10590,7 +10590,7 @@ async def get_close_progress_api(fiscal_period: str = Query("2026-04")):
 # ============================================================================
 # Helper function to update milestones based on approval completion
 # ============================================================================
-def update_milestones_from_approvals(fiscal_period: str = "2026-04"):
+def update_milestones_from_approvals(fiscal_period: str = "2026-05"):
     """
     CORRECTED: Update milestone progress based on approval registry data.
     
@@ -10668,14 +10668,14 @@ def update_milestones_from_approvals(fiscal_period: str = "2026-04"):
 
 def update_progress_from_approvals():
     """Helper to update progress milestones after approvals"""
-    update_milestones_from_approvals("2026-04")
+    update_milestones_from_approvals("2026-05")
 
 
 
 # Call this periodically or when approvals are processed
 def update_progress_after_approval():
     """Call this after any approval decision to update progress"""
-    update_milestones_from_approvals("2026-04")
+    update_milestones_from_approvals("2026-05")
     logger.info("📊 Updated close progress milestones based on current state")
 
 
@@ -10705,23 +10705,23 @@ async def startup_event():
     
     # Check if data files exist
     required_files = [
-        'Raw_GL_Export_With_CostCenters_Mar2026.csv',
+        'Raw_GL_Export_With_CostCenters_May2026.csv',
         'Master_COA_Complete.csv',
         'Master_CostCenters_States.csv',
-        'AR_Subledger_Mar2026.csv',
-        'Budget_Mar2026_Detailed.csv',
+        'AR_Subledger_May2026.csv',
+        'Budget_May2026_Detailed.csv',
         'PL_Statement_Mar2025_Comparative.csv',
-        'Intercompany_Transactions_Mar2026.csv',
-        'Intercompany_Reconciliation_Mar2026.csv',
-        'Intercompany_Elimination_Journals_Mar2026.csv',
-        'Accruals_Register_Mar2026.csv',
-        'Prepayments_Register_Mar2026.csv',
-        'Accrual_Adjustment_Journals_Mar2026.csv',
-        'Prepayment_Amortization_Journals_Mar2026.csv',
-        'Bank_Statements_Mar2026.csv',
-        'GL_Cash_Balances_Mar2026.csv',
-        'Bank_Reconciliation_Items_Mar2026.csv',
-        'Bank_Reconciliation_Journals_Mar2026.csv'
+        'Intercompany_Transactions_May2026.csv',
+        'Intercompany_Reconciliation_May2026.csv',
+        'Intercompany_Elimination_Journals_May2026.csv',
+        'Accruals_Register_May2026.csv',
+        'Prepayments_Register_May2026.csv',
+        'Accrual_Adjustment_Journals_May2026.csv',
+        'Prepayment_Amortization_Journals_May2026.csv',
+        'Bank_Statements_May2026.csv',
+        'GL_Cash_Balances_May2026.csv',
+        'Bank_Reconciliation_Items_May2026.csv',
+        'Bank_Reconciliation_Journals_May2026.csv'
     ]
     
     files_found = 0
