@@ -8401,7 +8401,7 @@ def load_enhanced_gl(fiscal_period: str = "2026-03") -> List[Dict[str, Any]]:
 # ============================================================================
 
 @app.get("/tools/pl/statement", response_model=ToolResponse)
-async def generate_pl_statement(fiscal_period: str = Query("2026-03")):
+async def generate_pl_statement(fiscal_period: str = Query("2026-05")):
     """
     Generate CFO-ready Profit & Loss statement with standard sections
     """
@@ -8492,7 +8492,7 @@ async def generate_pl_statement(fiscal_period: str = Query("2026-03")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/pl/transactions", response_model=ToolResponse)
-async def get_pl_transactions(fiscal_period: str = Query("2026-03"), section: Optional[str] = Query(None)):
+async def get_pl_transactions(fiscal_period: str = Query("2026-05"), section: Optional[str] = Query(None)):
     """Get P&L transactions filtered by section"""
     try:
         pl_data = load_pl_data(fiscal_period)
@@ -8522,7 +8522,7 @@ async def get_pl_transactions(fiscal_period: str = Query("2026-03"), section: Op
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/pl/approval_items", response_model=ToolResponse)
-async def get_pl_approval_items(fiscal_period: str = Query("2026-03")):
+async def get_pl_approval_items(fiscal_period: str = Query("2026-05")):
     """Get P&L items requiring CFO approval before close"""
     try:
         pl_data = load_pl_data(fiscal_period)
@@ -8548,7 +8548,7 @@ async def get_pl_approval_items(fiscal_period: str = Query("2026-03")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/pl/gl_reconciliation", response_model=ToolResponse)
-async def reconcile_pl_to_gl(fiscal_period: str = Query("2026-03")):
+async def reconcile_pl_to_gl(fiscal_period: str = Query("2026-05")):
     """Reconcile P&L totals back to Enhanced GL"""
     try:
         pl_data = load_pl_data(fiscal_period)
@@ -8583,7 +8583,7 @@ async def reconcile_pl_to_gl(fiscal_period: str = Query("2026-03")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/pl/variance_analysis", response_model=ToolResponse)
-async def analyze_pl_variances(fiscal_period: str = Query("2026-03")):
+async def analyze_pl_variances(fiscal_period: str = Query("2026-05")):
     """Analyze variances flagged in the P&L data"""
     try:
         pl_data = load_pl_data(fiscal_period)
@@ -8625,7 +8625,7 @@ async def analyze_pl_variances(fiscal_period: str = Query("2026-03")):
 # ============================================================================
 
 @app.get("/tools/workforce/cost_revenue_correlation", response_model=ToolResponse)
-async def analyze_workforce_cost_revenue(fiscal_period: str = Query("2026-03"), business_unit: Optional[str] = Query(None)):
+async def analyze_workforce_cost_revenue(fiscal_period: str = Query("2026-05"), business_unit: Optional[str] = Query(None)):
     """Correlate workforce cost with revenue/output by business unit"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8682,7 +8682,7 @@ async def analyze_workforce_cost_revenue(fiscal_period: str = Query("2026-03"), 
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/workforce/salary_analysis", response_model=ToolResponse)
-async def analyze_salary_costs(fiscal_period: str = Query("2026-03")):
+async def analyze_salary_costs(fiscal_period: str = Query("2026-05")):
     """Analyze salary costs by department, identify unusual patterns and compliance risks"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8769,7 +8769,7 @@ async def analyze_salary_costs(fiscal_period: str = Query("2026-03")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/workforce/cost_output_efficiency", response_model=ToolResponse)
-async def analyze_workforce_efficiency(fiscal_period: str = Query("2026-03")):
+async def analyze_workforce_efficiency(fiscal_period: str = Query("2026-05")):
     """Identify areas where workforce cost increases without output/utilisation improvement"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8838,7 +8838,7 @@ async def analyze_workforce_efficiency(fiscal_period: str = Query("2026-03")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/workforce/resource_optimization", response_model=ToolResponse)
-async def optimize_resource_allocation(fiscal_period: str = Query("2026-03")):
+async def optimize_resource_allocation(fiscal_period: str = Query("2026-05")):
     """Generate resource allocation recommendations to improve utilisation and margin"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8908,7 +8908,7 @@ async def optimize_resource_allocation(fiscal_period: str = Query("2026-03")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/workforce/labour_cost_metrics", response_model=ToolResponse)
-async def calculate_labour_cost_metrics(fiscal_period: str = Query("2026-03"), business_unit: Optional[str] = Query(None)):
+async def calculate_labour_cost_metrics(fiscal_period: str = Query("2026-05"), business_unit: Optional[str] = Query(None)):
     """Calculate labour cost per output metrics with filtering by business unit"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8978,7 +8978,7 @@ async def calculate_labour_cost_metrics(fiscal_period: str = Query("2026-03"), b
 # ============================================================================
 
 @app.get("/tools/esg/leakage_detection", response_model=ToolResponse)
-async def detect_esg_leakage(fiscal_period: str = Query("2026-03")):
+async def detect_esg_leakage(fiscal_period: str = Query("2026-05")):
     """Detect ESG cost leakage and misclassification"""
     try:
         esg_data = load_esg_data(fiscal_period)
@@ -9052,7 +9052,7 @@ async def detect_esg_leakage(fiscal_period: str = Query("2026-03")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/esg/financial_impact", response_model=ToolResponse)
-async def analyze_esg_financial_impact(fiscal_period: str = Query("2026-03")):
+async def analyze_esg_financial_impact(fiscal_period: str = Query("2026-05")):
     """Analyze ESG impact on working capital, margins, and cash flow"""
     try:
         esg_data = load_esg_data(fiscal_period)
@@ -9107,7 +9107,7 @@ async def analyze_esg_financial_impact(fiscal_period: str = Query("2026-03")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/esg/disclosure_readiness", response_model=ToolResponse)
-async def assess_disclosure_readiness(fiscal_period: str = Query("2026-03")):
+async def assess_disclosure_readiness(fiscal_period: str = Query("2026-05")):
     """Assess ESG disclosure readiness and auditability"""
     try:
         esg_data = load_esg_data(fiscal_period)
@@ -9180,7 +9180,7 @@ async def assess_disclosure_readiness(fiscal_period: str = Query("2026-03")):
 
 @app.get("/tools/esg/scenario_modeling", response_model=ToolResponse)
 async def model_esg_scenario(
-    fiscal_period: str = Query("2026-03"),
+    fiscal_period: str = Query("2026-05"),
     target_increase_percent: float = Query(15, ge=5, le=30)
 ):
     """Simulate sustainability target increases and model impacts on cost structure and margins"""
@@ -9244,7 +9244,7 @@ async def model_esg_scenario(
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/esg/board_narrative", response_model=ToolResponse)
-async def generate_board_narrative(fiscal_period: str = Query("2026-03")):
+async def generate_board_narrative(fiscal_period: str = Query("2026-05")):
     """Generate board-ready ESG performance narrative linking outcomes to financial performance"""
     try:
         esg_data = load_esg_data(fiscal_period)
@@ -9308,7 +9308,7 @@ RECOMMENDATIONS:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/esg/kpi_tracking", response_model=ToolResponse)
-async def track_esg_kpis(fiscal_period: str = Query("2026-03"), category: Optional[str] = Query(None)):
+async def track_esg_kpis(fiscal_period: str = Query("2026-05"), category: Optional[str] = Query(None)):
     """Track ESG KPI attainment vs targets across categories"""
     try:
         esg_data = load_esg_data(fiscal_period)
