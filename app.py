@@ -4638,8 +4638,8 @@ def yoy_comparison(request: YoYComparisonRequest):
             # Skip summary/total rows
             if category.upper() == 'TOTAL' or item['Account_Code'].startswith('TOTAL'):
                 continue
-            # Use Mar_2025_Actual column from the CSV
-            prior_totals[category] = float(item['Mar_2025_Actual'])
+            # Use May_2025_Actual column from the CSV
+            prior_totals[category] = float(item['May_2025_Actual'])
         
         # Calculate comparisons
         comparisons = []
