@@ -10765,12 +10765,29 @@ def _run_script_and_get_output(script_name: str, old_path: str, new_extension: s
     Execute a build script with a temp output path and return the file bytes.
     Replaces the hardcoded /sessions/... save path with a temp file path.
     """
-    script_path = os.path.join(SCRIPT_BASE_DIR, script_name)
-    if not os.path.exists(script_path):
+    # Try multiple possible locations
+    possible_paths = [
+        os.path.join(SCRIPT_BASE_DIR, script_name),
+        os.path.join(os.getcwd(), script_name),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), script_name),
+    ]
+    
+    script_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            script_path = path
+            break
+    
+    if not script_path:
         raise HTTPException(status_code=404, detail=f"Build script not found: {script_name}")
 
-    with open(script_path, "r", encoding="utf-8") as f:
-        code = f.read()
+    try:
+        with open(script_path, "r", encoding="utf-8") as f:
+            code = f.read()
+    except UnicodeDecodeError:
+        # Try with different encoding
+        with open(script_path, "r", encoding="latin-1") as f:
+            code = f.read()
 
     # Create temp output file
     tmp_out = tempfile.NamedTemporaryFile(suffix=new_extension, delete=False)
@@ -10786,11 +10803,19 @@ def _run_script_and_get_output(script_name: str, old_path: str, new_extension: s
     tmp_script.close()
 
     try:
+        # Set PYTHONIOENCODING to utf-8 to handle Unicode properly
+        env = os.environ.copy()
+        env["PYTHONIOENCODING"] = "utf-8"
+        env["PYTHONUTF8"] = "1"  # Force UTF-8 mode
+        
         result = subprocess.run(
             [sys.executable, tmp_script.name],
             capture_output=True,
             text=True,
             timeout=120,
+            env=env,
+            encoding="utf-8",
+            errors="replace",  # Replace problematic characters
         )
     except subprocess.TimeoutExpired:
         raise HTTPException(status_code=504, detail="Report generation timed out (120s)")
@@ -10801,7 +10826,9 @@ def _run_script_and_get_output(script_name: str, old_path: str, new_extension: s
             pass
 
     if not os.path.exists(out_path) or os.path.getsize(out_path) == 0:
-        detail = result.stderr[-1000:] if result.stderr else "Unknown error"
+        # Check if there was an error in the script execution
+        error_output = result.stderr if result.stderr else result.stdout
+        detail = error_output[-1000:] if error_output else "Unknown error"
         raise HTTPException(status_code=500, detail=f"Report generation failed: {detail}")
 
     with open(out_path, "rb") as f:
