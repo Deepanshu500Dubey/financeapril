@@ -10941,6 +10941,141 @@ async def generate_driver_forecast():
         headers={"Content-Disposition": f'attachment; filename="Driver_Forecast_Q3_2026{ext}"'},
     )
 
+# ============================================================================
+# FORECAST DOWNLOAD ENDPOINTS (Add after existing forecast endpoints)
+# ============================================================================
+
+@app.get("/forecast/download/quarterly")
+async def download_quarterly_forecast():
+    """
+    Download the Q3 2026 Quarterly Forecast Excel file
+    """
+    try:
+        content = _run_script_and_get_output(
+            script_name="build_forecast.py",
+            old_path="/sessions/practical-blissful-maxwell/mnt/outputs/Q3_2026_Quarterly_Forecast.xlsx",
+        )
+        return Response(
+            content=content,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": 'attachment; filename="Q3_2026_Quarterly_Forecast.xlsx"',
+                "Access-Control-Expose-Headers": "Content-Disposition"
+            },
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating forecast: {str(e)}")
+
+@app.get("/forecast/download/reallocation")
+async def download_cost_reallocation():
+    """
+    Download the Cost Reallocation Forecast Excel file
+    """
+    try:
+        content = _run_script_and_get_output(
+            script_name="build_cost_realloc.py",
+            old_path="/sessions/practical-blissful-maxwell/mnt/outputs/Cost_Reallocation_Forecast_Q3_2026.xlsx",
+        )
+        return Response(
+            content=content,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={
+                "Content-Disposition": 'attachment; filename="Cost_Reallocation_Forecast_Q3_2026.xlsx"',
+                "Access-Control-Expose-Headers": "Content-Disposition"
+            },
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating reallocation forecast: {str(e)}")
+
+@app.get("/forecast/download/driver")
+async def download_driver_forecast():
+    """
+    Download the Driver-Based Forecast Excel file (XLSM with macros)
+    """
+    try:
+        content = _run_script_and_get_output(
+            script_name="build_driver_forecast.py",
+            old_path="/sessions/practical-blissful-maxwell/mnt/outputs/Driver_Forecast_Q3_2026.xlsm",
+        )
+        return Response(
+            content=content,
+            media_type="application/vnd.ms-excel.sheet.macroEnabled.12",
+            headers={
+                "Content-Disposition": 'attachment; filename="Driver_Forecast_Q3_2026.xlsm"',
+                "Access-Control-Expose-Headers": "Content-Disposition"
+            },
+        )
+    except Exception as e:
+        # Fallback to XLSX if XLSM fails
+        try:
+            content = _run_script_and_get_output(
+                script_name="build_driver_forecast.py",
+                old_path="/sessions/practical-blissful-maxwell/mnt/outputs/Driver_Forecast_Q3_2026.xlsx",
+            )
+            return Response(
+                content=content,
+                media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                headers={
+                    "Content-Disposition": 'attachment; filename="Driver_Forecast_Q3_2026.xlsx"',
+                    "Access-Control-Expose-Headers": "Content-Disposition"
+                },
+            )
+        except Exception as e2:
+            raise HTTPException(status_code=500, detail=f"Error generating driver forecast: {str(e2)}")
+
+@app.get("/forecast/download/all")
+async def download_all_forecasts():
+    """
+    Generate and download all three forecast files as a ZIP archive
+    """
+    import zipfile
+    from io import BytesIO
+    
+    try:
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            # Quarterly Forecast
+            try:
+                content = _run_script_and_get_output(
+                    script_name="build_forecast.py",
+                    old_path="/sessions/practical-blissful-maxwell/mnt/outputs/Q3_2026_Quarterly_Forecast.xlsx",
+                )
+                zip_file.writestr("Q3_2026_Quarterly_Forecast.xlsx", content)
+            except Exception as e:
+                logger.error(f"Error generating quarterly forecast: {e}")
+            
+            # Cost Reallocation
+            try:
+                content = _run_script_and_get_output(
+                    script_name="build_cost_realloc.py",
+                    old_path="/sessions/practical-blissful-maxwell/mnt/outputs/Cost_Reallocation_Forecast_Q3_2026.xlsx",
+                )
+                zip_file.writestr("Cost_Reallocation_Forecast_Q3_2026.xlsx", content)
+            except Exception as e:
+                logger.error(f"Error generating reallocation forecast: {e}")
+            
+            # Driver Forecast
+            try:
+                content = _run_script_and_get_output(
+                    script_name="build_driver_forecast.py",
+                    old_path="/sessions/practical-blissful-maxwell/mnt/outputs/Driver_Forecast_Q3_2026.xlsm",
+                )
+                zip_file.writestr("Driver_Forecast_Q3_2026.xlsm", content)
+            except Exception as e:
+                logger.error(f"Error generating driver forecast: {e}")
+        
+        zip_buffer.seek(0)
+        return Response(
+            content=zip_buffer.getvalue(),
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": 'attachment; filename="All_Forecasts_Q3_2026.zip"',
+                "Access-Control-Expose-Headers": "Content-Disposition"
+            },
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating forecast bundle: {str(e)}")
+
 
 # ============================================================================
 # MAIN
