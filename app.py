@@ -8,7 +8,7 @@ Includes CFO Financial Dashboard and Email Reports with SendGrid
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from numpy import size
 from pydantic import BaseModel, Field, EmailStr
@@ -25,6 +25,8 @@ import io
 import base64
 import tempfile
 import json
+import subprocess
+import sys
 
 # Email and PDF libraries
 from dotenv import load_dotenv
@@ -10751,6 +10753,194 @@ async def startup_event():
     logger.info("="*60)
     logger.info("System startup completed successfully")
     logger.info("="*60)
+
+# ============================================================================
+# EXCEL REPORT GENERATION ENDPOINTS
+# ============================================================================
+
+SCRIPT_BASE_DIR = r"C:\Users\deepd\Downloads"
+
+def _run_script_and_get_output(script_name: str, old_path: str, new_extension: str = ".xlsx") -> bytes:
+    """
+    Execute a build script with a temp output path and return the file bytes.
+    Replaces the hardcoded /sessions/... save path with a temp file path.
+    """
+    script_path = os.path.join(SCRIPT_BASE_DIR, script_name)
+    if not os.path.exists(script_path):
+        raise HTTPException(status_code=404, detail=f"Build script not found: {script_name}")
+
+    with open(script_path, "r", encoding="utf-8") as f:
+        code = f.read()
+
+    # Create temp output file
+    tmp_out = tempfile.NamedTemporaryFile(suffix=new_extension, delete=False)
+    tmp_out.close()
+    out_path = tmp_out.name
+
+    # Replace the hardcoded session path with our temp path
+    code = code.replace(old_path, out_path.replace("\\", "/"))
+
+    # Write patched script to a temp file and run it
+    tmp_script = tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8")
+    tmp_script.write(code)
+    tmp_script.close()
+
+    try:
+        result = subprocess.run(
+            [sys.executable, tmp_script.name],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=504, detail="Report generation timed out (120s)")
+    finally:
+        try:
+            os.unlink(tmp_script.name)
+        except OSError:
+            pass
+
+    if not os.path.exists(out_path) or os.path.getsize(out_path) == 0:
+        detail = result.stderr[-1000:] if result.stderr else "Unknown error"
+        raise HTTPException(status_code=500, detail=f"Report generation failed: {detail}")
+
+    with open(out_path, "rb") as f:
+        content = f.read()
+    try:
+        os.unlink(out_path)
+    except OSError:
+        pass
+
+    return content
+
+
+@app.get(
+    "/reports/excel/quarterly-forecast",
+    summary="Generate Q3 2026 Quarterly Forecast Excel",
+    tags=["Excel Reports"],
+)
+async def generate_quarterly_forecast():
+    """
+    Generates the Q3 2026 Three-Scenario Quarterly Financial Forecast workbook
+    (Base / Upside +20% / Risk-Adjusted geopolitical) and returns it as a
+    downloadable .xlsx file.
+    """
+    content = _run_script_and_get_output(
+        script_name="build_forecast.py",
+        old_path="/sessions/practical-blissful-maxwell/mnt/outputs/Q3_2026_Quarterly_Forecast.xlsx",
+    )
+    return Response(
+        content=content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": 'attachment; filename="Q3_2026_Quarterly_Forecast.xlsx"'},
+    )
+
+
+@app.get(
+    "/reports/excel/cost-reallocation",
+    summary="Generate Strategic Cost Reallocation Model Excel",
+    tags=["Excel Reports"],
+)
+async def generate_cost_reallocation():
+    """
+    Generates the Q3 2026 Strategic Cost Reallocation Model workbook — support
+    function efficiency analysis, regional P&L, margin analysis, risk register,
+    and CFO action plan — and returns it as a downloadable .xlsx file.
+    """
+    content = _run_script_and_get_output(
+        script_name="build_cost_realloc.py",
+        old_path="/sessions/practical-blissful-maxwell/mnt/outputs/Cost_Reallocation_Forecast_Q3_2026.xlsx",
+    )
+    return Response(
+        content=content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": 'attachment; filename="Cost_Reallocation_Forecast_Q3_2026.xlsx"'},
+    )
+
+
+@app.get(
+    "/reports/excel/driver-forecast",
+    summary="Generate Driver-Based Forecast Model (XLSM with macros)",
+    tags=["Excel Reports"],
+)
+async def generate_driver_forecast():
+    """
+    Generates the Q3 2026 Driver-Based Forecast Model workbook — scenario
+    control, revenue model, cost model, P&L monthly, cash flow, working capital,
+    budget variance, scenarios, and CFO dashboard — and returns it as a
+    downloadable .xlsm file (macro-enabled).
+    """
+    script_name = "build_driver_forecast.py"
+    script_path = os.path.join(SCRIPT_BASE_DIR, script_name)
+    if not os.path.exists(script_path):
+        raise HTTPException(status_code=404, detail=f"Build script not found: {script_name}")
+
+    with open(script_path, "r", encoding="utf-8") as f:
+        code = f.read()
+
+    # Two output paths to replace: xlsx (intermediate) and xlsm (final)
+    tmp_xlsx = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False)
+    tmp_xlsx.close()
+    tmp_xlsm = tempfile.NamedTemporaryFile(suffix=".xlsm", delete=False)
+    tmp_xlsm.close()
+
+    code = code.replace(
+        '"/sessions/practical-blissful-maxwell/mnt/outputs/Driver_Forecast_Q3_2026.xlsx"',
+        repr(tmp_xlsx.name.replace("\\", "/")),
+    )
+    code = code.replace(
+        '"/sessions/practical-blissful-maxwell/mnt/outputs/Driver_Forecast_Q3_2026.xlsm"',
+        repr(tmp_xlsm.name.replace("\\", "/")),
+    )
+
+    tmp_script = tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8")
+    tmp_script.write(code)
+    tmp_script.close()
+
+    try:
+        result = subprocess.run(
+            [sys.executable, tmp_script.name],
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=504, detail="Report generation timed out (180s)")
+    finally:
+        try:
+            os.unlink(tmp_script.name)
+        except OSError:
+            pass
+
+    # Prefer xlsm; fall back to xlsx if xlsm generation failed
+    if os.path.exists(tmp_xlsm.name) and os.path.getsize(tmp_xlsm.name) > 0:
+        out_path, ext = tmp_xlsm.name, ".xlsm"
+    elif os.path.exists(tmp_xlsx.name) and os.path.getsize(tmp_xlsx.name) > 0:
+        out_path, ext = tmp_xlsx.name, ".xlsx"
+    else:
+        detail = result.stderr[-1000:] if result.stderr else "Unknown error"
+        raise HTTPException(status_code=500, detail=f"Report generation failed: {detail}")
+
+    with open(out_path, "rb") as f:
+        content = f.read()
+
+    for p in (tmp_xlsx.name, tmp_xlsm.name):
+        try:
+            os.unlink(p)
+        except OSError:
+            pass
+
+    media_type = (
+        "application/vnd.ms-excel.sheet.macroEnabled.12"
+        if ext == ".xlsm"
+        else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    return Response(
+        content=content,
+        media_type=media_type,
+        headers={"Content-Disposition": f'attachment; filename="Driver_Forecast_Q3_2026{ext}"'},
+    )
+
 
 # ============================================================================
 # MAIN
