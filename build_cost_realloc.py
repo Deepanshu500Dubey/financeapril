@@ -131,7 +131,7 @@ print(f"Reinvestment: ${REINVEST:,.0f}")
 for cc in ["QLD","NSW","WA","MKT"]:
     alloc = REINVEST * REINVEST_ALLOC[cc]
     rev_uplift = alloc * REV_MULT[cc]
-    print(f"  {cc}: reinvest ${alloc:,.0f} → revenue uplift ${rev_uplift:,.0f}")
+    print(f"  {cc}: reinvest ${alloc:,.0f} -> revenue uplift ${rev_uplift:,.0f}")
 
 
 # ═══════════════════════════════════════════════════════════════════════════

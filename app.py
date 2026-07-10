@@ -3,7 +3,9 @@ FastAPI Application for Finance Month-End Close AI Agent
 Provides tools for Watsonx Orchestrate integration with Dashboard Approvals
 Includes CFO Financial Dashboard and Email Reports with SendGrid
 """
-
+print("=" * 60)
+print("🔧 FORECAST_EDITOR MODULE LOADING...")
+print("=" * 60)
 
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Query
@@ -27,6 +29,7 @@ import tempfile
 import json
 import subprocess
 import sys
+from forecast_editor import get_global_editor, reset_global_editor, ForecastEditor
 
 # Email and PDF libraries
 from dotenv import load_dotenv
@@ -118,11 +121,11 @@ class ToolResponse(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
 
 class TrialBalanceRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-05")
+    fiscal_period: str = Field(..., example="2026-06")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class ARVarianceRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-05")
+    fiscal_period: str = Field(..., example="2026-06")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class CostCenterAssignment(BaseModel):
@@ -132,7 +135,7 @@ class CostCenterAssignment(BaseModel):
 
 class CostCenterBatchRequest(BaseModel):
     assignments: List[CostCenterAssignment]
-    fiscal_period: str = Field(..., example="2026-05")
+    fiscal_period: str = Field(..., example="2026-06")
 
 class CostCenterSuggestion(BaseModel):
     transaction_id: str
@@ -142,7 +145,7 @@ class CostCenterSuggestion(BaseModel):
 
 class CostCenterSuggestionsRequest(BaseModel):
     suggestions: List[CostCenterSuggestion]
-    fiscal_period: str = Field(..., example="2026-05")
+    fiscal_period: str = Field(..., example="2026-06")
 
 
 class JournalEntry(BaseModel):
@@ -157,23 +160,23 @@ class JournalEntry(BaseModel):
 
 class JournalEntryRequest(BaseModel):
     entries: List[JournalEntry]
-    fiscal_period: str = Field(..., example="2026-05")
+    fiscal_period: str = Field(..., example="2026-06")
 
 class BudgetVarianceRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-05")
+    fiscal_period: str = Field(..., example="2026-06")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class YoYComparisonRequest(BaseModel):
-    current_period: str = Field(..., example="2026-05")
+    current_period: str = Field(..., example="2026-06")
     comparison_period: str = Field(..., example="2025-04")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class CostCenterPLRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-05")
+    fiscal_period: str = Field(..., example="2026-06")
     entity_code: str = Field(default="AUS01", example="AUS01")
 
 class MonthEndCloseRequest(BaseModel):
-    fiscal_period: str = Field(..., example="2026-05")
+    fiscal_period: str = Field(..., example="2026-06")
     entity_code: str = Field(default="AUS01", example="AUS01")
     approved_by: str
     send_email_reports: bool = Field(True, description="Send email reports after closing")
@@ -223,7 +226,7 @@ class EmailRecipient(BaseModel):
 
 class EmailReportRequest(BaseModel):
     recipients: List[EmailRecipient]
-    fiscal_period: str = Field("2026-05", description="Fiscal period for reports")
+    fiscal_period: str = Field("2026-06", description="Fiscal period for reports")
     entity_code: str = Field("AUS01", description="Entity code")
     include_pdf: bool = Field(True, description="Include PDF report")
     include_csv: bool = Field(True, description="Include CSV data")
@@ -296,7 +299,7 @@ class ApprovalRegistry:
             'description': approval_item.description[:100],
             'amount': str(approval_item.amount) if approval_item.amount else '',
             'created_at': datetime.now().isoformat(),
-            'fiscal_period': approval_item.metadata.get('fiscal_period', '2026-05') if approval_item.metadata else '2026-05',
+            'fiscal_period': approval_item.metadata.get('fiscal_period', '2026-06') if approval_item.metadata else '2026-06',
             'entity': approval_item.metadata.get('entity', 'AUS01') if approval_item.metadata else 'AUS01',
             'status': 'PENDING',
             'metadata_summary': self._summarize_metadata(approval_item.metadata)
@@ -410,7 +413,7 @@ approval_registry = ApprovalRegistry()
 
 def update_progress_from_approvals():
     """Helper to update progress milestones after approvals"""
-    update_milestones_from_approvals("2026-05")
+    update_milestones_from_approvals("2026-06")
 
 # ============================================================================
 # DATA STORES (In-memory for demo - use database in production)
@@ -475,7 +478,7 @@ def create_approval_item(
     account: Optional[str] = None,
     cost_center: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
-    fiscal_period: str = "2026-05"
+    fiscal_period: str = "2026-06"
 ) -> ApprovalItem:
     """Create and store a new approval item"""
     item_id = str(uuid.uuid4())[:8]
@@ -977,7 +980,7 @@ class CloseProgressTracker:
 # Initialize progress tracker
 progress_tracker = CloseProgressTracker()
 
-def update_milestones_from_approvals(fiscal_period: str = "2026-05"):
+def update_milestones_from_approvals(fiscal_period: str = "2026-06"):
     """
     Update milestone progress based on approval registry data.
     Final Trial Balance is calculated from OTHER milestones, not approvals.
@@ -1047,10 +1050,10 @@ def update_milestones_from_approvals(fiscal_period: str = "2026-05"):
 
 def update_progress_from_approvals():
     """Helper to update progress milestones after approvals"""
-    update_milestones_from_approvals("2026-05")
+    update_milestones_from_approvals("2026-06")
 
 
-def analyze_close_readiness(fiscal_period: str = "2026-05") -> Dict[str, Any]:
+def analyze_close_readiness(fiscal_period: str = "2026-06") -> Dict[str, Any]:
     """
     CORRECTED: Comprehensive analysis of close readiness based on current state.
     
@@ -1410,9 +1413,9 @@ def generate_trial_balance_data(fiscal_period: str, entity_code: str) -> Dict[st
     """Helper function to generate trial balance data"""
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         coa = load_coa()
-        ar_records = load_csv_data('AR_Subledger_May2026.csv')
+        ar_records = load_csv_data('AR_Subledger_Jun2026.csv')
         
         # Filter transactions for the period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -1572,10 +1575,10 @@ def generate_pdf_report(
     
     # Load data
     try:
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         coa = load_coa()
-        ar_records = load_csv_data('AR_Subledger_May2026.csv')
-        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
+        ar_records = load_csv_data('AR_Subledger_Jun2026.csv')
+        budget_data = load_csv_data('Budget_Jun2026_Detailed.csv')
         
         # Filter for period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -1850,10 +1853,10 @@ def generate_csv_report(fiscal_period: str, report_type: str) -> str:
     writer = csv.writer(output)
     
     # Load data
-    transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+    transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
     coa = load_coa()
-    ar_records = load_csv_data('AR_Subledger_May2026.csv')
-    budget_data = load_csv_data('Budget_May2026_Detailed.csv')
+    ar_records = load_csv_data('AR_Subledger_Jun2026.csv')
+    budget_data = load_csv_data('Budget_Jun2026_Detailed.csv')
     
     # Filter for period
     period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -3527,7 +3530,7 @@ async def decide_approval(
     history_record['reviewer'] = reviewer
     history_record['comments'] = comments
     history_record['decision'] = 'approved' if approved else 'rejected'
-    history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-05') if item.metadata else '2026-05'
+    history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-06') if item.metadata else '2026-06'
     approval_history.append(history_record)
     
     # UPDATE REGISTRY
@@ -3620,7 +3623,7 @@ async def batch_approve(request: ApprovalBatchRequest):
             history_record['reviewer'] = request.reviewer
             history_record['comments'] = request.comments
             history_record['decision'] = 'approved' if request.approved else 'rejected'
-            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-05') if item.metadata else '2026-05'
+            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-06') if item.metadata else '2026-06'
             approval_history.append(history_record)
             
             # UPDATE REGISTRY
@@ -3683,7 +3686,7 @@ async def approve_all_pending(
             history_record['reviewer'] = reviewer
             history_record['comments'] = comments
             history_record['decision'] = 'approved'
-            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-05') if item.metadata else '2026-05'
+            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-06') if item.metadata else '2026-06'
             approval_history.append(history_record)
             
             # UPDATE REGISTRY
@@ -3747,7 +3750,7 @@ async def reject_all_pending(
             history_record['reviewer'] = reviewer
             history_record['comments'] = comments
             history_record['decision'] = 'rejected'
-            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-05') if item.metadata else '2026-05'
+            history_record['fiscal_period'] = item.metadata.get('fiscal_period', '2026-06') if item.metadata else '2026-06'
             approval_history.append(history_record)
             
             # UPDATE REGISTRY
@@ -4021,10 +4024,10 @@ def initial_assessment(request: TrialBalanceRequest):
     """
     try:
         # Load all data files
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         coa = load_coa()
         cost_centers_data = load_csv_data('Master_CostCenters_States.csv')
-        ar_records = load_csv_data('AR_Subledger_May2026.csv')
+        ar_records = load_csv_data('AR_Subledger_Jun2026.csv')
         
         # Filter for the requested period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == request.fiscal_period]
@@ -4151,8 +4154,8 @@ def analyze_ar_variance(request: ARVarianceRequest):
     """
     try:
         # Load data
-        ar_records = load_csv_data('AR_Subledger_May2026.csv')
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        ar_records = load_csv_data('AR_Subledger_Jun2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         
         # Filter GL transactions for AR account
         period_txns = [t for t in transactions if t['Fiscal_Period'] == request.fiscal_period]
@@ -4290,7 +4293,7 @@ def assign_cost_centers(request: CostCenterBatchRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         cost_centers_data = load_csv_data('Master_CostCenters_States.csv')
         valid_cost_centers = [cc['Cost_Center_Code'] for cc in cost_centers_data]
         
@@ -4365,7 +4368,7 @@ def assign_cost_centers(request: CostCenterBatchRequest):
         # Save updated transactions
         if updated_count > 0:
             fieldnames = list(transactions[0].keys())
-            save_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv', transactions, fieldnames)
+            save_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv', transactions, fieldnames)
             logger.info(f"Saved {updated_count} cost center assignments to CSV")
         
         # Clean up approved items from pending_approvals
@@ -4401,7 +4404,7 @@ def post_journal_entries(request: JournalEntryRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         coa = load_coa()
         
         # Check if entries are approved using registry
@@ -4497,7 +4500,7 @@ def post_journal_entries(request: JournalEntryRequest):
         
         # Save updated transactions
         fieldnames = list(transactions[0].keys())
-        save_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv', transactions, fieldnames)
+        save_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv', transactions, fieldnames)
         
         return ToolResponse(
             success=True,
@@ -4522,8 +4525,8 @@ def budget_variance_analysis(request: BudgetVarianceRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
-        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
+        budget_data = load_csv_data('Budget_Jun2026_Detailed.csv')
         coa = load_coa()
         
         # Filter period transactions
@@ -4619,7 +4622,7 @@ def yoy_comparison(request: YoYComparisonRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         prior_year_data = load_csv_data('PL_Statement_Mar2025_Comparative.csv')
         coa = load_coa()
         
@@ -4640,8 +4643,8 @@ def yoy_comparison(request: YoYComparisonRequest):
             # Skip summary/total rows
             if category.upper() == 'TOTAL' or item['Account_Code'].startswith('TOTAL'):
                 continue
-            # Use May_2025_Actual column from the CSV
-            prior_totals[category] = float(item['May_2025_Actual'])
+            # Use Jun_2025_Actual column from the CSV
+            prior_totals[category] = float(item['Jun_2025_Actual'])
         
         # Calculate comparisons
         comparisons = []
@@ -4683,7 +4686,7 @@ def cost_center_pl(request: CostCenterPLRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         coa = load_coa()
         
         # Filter period transactions
@@ -4906,7 +4909,7 @@ def get_missing_cost_centers(fiscal_period: str):
     Get list of transactions with missing cost centers
     """
     try:
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
         
         missing = []
@@ -5057,7 +5060,7 @@ def get_overdue_invoices():
     Get list of overdue invoices requiring collection action
     """
     try:
-        ar_records = load_csv_data('AR_Subledger_May2026.csv')
+        ar_records = load_csv_data('AR_Subledger_Jun2026.csv')
         
         overdue = []
         for record in ar_records:
@@ -5104,7 +5107,7 @@ def get_overdue_invoices():
                                 "days_outstanding": days_outstanding,
                                 "due_date": record['Due_Date']
                             },
-                            fiscal_period="2026-05"
+                            fiscal_period="2026-06"
                         )
                         invoice_data['approval_token'] = approval_item.token
                         invoice_data['approval_links'] = get_approval_links(approval_item.token)
@@ -5139,7 +5142,7 @@ def get_overdue_invoices():
 
 @app.get("/cfo/financial_dashboard", response_class=HTMLResponse)
 async def cfo_financial_dashboard(
-    fiscal_period: str = Query("2026-05", description="Fiscal period to display"),
+    fiscal_period: str = Query("2026-06", description="Fiscal period to display"),
     entity_code: str = Query("AUS01", description="Entity code")
 ):
     """
@@ -5157,10 +5160,10 @@ async def cfo_financial_dashboard(
             logger.warning(f"Could not load logo: {e}")
         
         # Load financial data
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         coa = load_coa()
-        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
-        ar_records = load_csv_data('AR_Subledger_May2026.csv')
+        budget_data = load_csv_data('Budget_Jun2026_Detailed.csv')
+        ar_records = load_csv_data('AR_Subledger_Jun2026.csv')
         
         # Filter for the period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -6457,10 +6460,10 @@ async def send_financial_reports(
     summary_html = ""
     try:
         # Load data for summary
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         coa = load_coa()
-        ar_records = load_csv_data('AR_Subledger_May2026.csv')
-        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
+        ar_records = load_csv_data('AR_Subledger_Jun2026.csv')
+        budget_data = load_csv_data('Budget_Jun2026_Detailed.csv')
         
         # Filter for period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == request.fiscal_period]
@@ -6690,7 +6693,7 @@ async def send_financial_reports(
 @app.get("/reports/email/send-test")
 async def send_test_email(
     background_tasks: BackgroundTasks,
-    fiscal_period: str = Query("2026-05"),
+    fiscal_period: str = Query("2026-06"),
     entity_code: str = Query("AUS01")
 ):
     """
@@ -6714,7 +6717,7 @@ async def send_test_email(
 
 @app.get("/reports/email/preview", response_class=HTMLResponse)
 async def preview_email_report(
-    fiscal_period: str = Query("2026-05"),
+    fiscal_period: str = Query("2026-06"),
     entity_code: str = Query("AUS01"),
     report_types: str = Query("trial_balance,income_statement,balance_sheet,ar_aging,budget_variance")
 ):
@@ -6735,10 +6738,10 @@ async def preview_email_report(
     summary_html = ""
     try:
         # Load data for summary
-        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_May2026.csv')
+        transactions = load_csv_data('Raw_GL_Export_With_CostCenters_Jun2026.csv')
         coa = load_coa()
-        ar_records = load_csv_data('AR_Subledger_May2026.csv')
-        budget_data = load_csv_data('Budget_May2026_Detailed.csv')
+        ar_records = load_csv_data('AR_Subledger_Jun2026.csv')
+        budget_data = load_csv_data('Budget_Jun2026_Detailed.csv')
         
         # Filter for period
         period_txns = [t for t in transactions if t['Fiscal_Period'] == fiscal_period]
@@ -6962,11 +6965,11 @@ async def check_email_config():
 
 # Data Models
 class IntercompanyReconciliationRequest(BaseModel):
-    fiscal_period: str = Field("2026-05", description="Fiscal period for reconciliation")
+    fiscal_period: str = Field("2026-06", description="Fiscal period for reconciliation")
     entity_code: Optional[str] = Field(None, description="Filter by specific entity (optional)")
 
 class IntercompanyEliminationRequest(BaseModel):
-    fiscal_period: str = Field("2026-05", description="Fiscal period")
+    fiscal_period: str = Field("2026-06", description="Fiscal period")
     journal_ids: Optional[List[str]] = Field(None, description="Specific journal IDs to post")
     approve_all: bool = Field(False, description="Approve all pending elimination journals")
     approved_by: str = Field(..., description="Name of approver")
@@ -6989,9 +6992,9 @@ async def intercompany_reconcile(request: IntercompanyReconciliationRequest):
     """
     try:
         # Load data
-        transactions = load_csv_data('Intercompany_Transactions_May2026.csv')
-        reconciliation = load_csv_data('Intercompany_Reconciliation_May2026.csv')
-        elimination_journals = load_csv_data('Intercompany_Elimination_Journals_May2026.csv')
+        transactions = load_csv_data('Intercompany_Transactions_Jun2026.csv')
+        reconciliation = load_csv_data('Intercompany_Reconciliation_Jun2026.csv')
+        elimination_journals = load_csv_data('Intercompany_Elimination_Journals_Jun2026.csv')
         
         # Filter for period
         period_txns = [t for t in transactions if t.get('Period') == request.fiscal_period]
@@ -7153,7 +7156,7 @@ async def intercompany_reconcile(request: IntercompanyReconciliationRequest):
 
 @app.get("/tools/intercompany/transactions", response_model=ToolResponse)
 async def get_intercompany_transactions(
-    fiscal_period: str = Query("2026-05"),
+    fiscal_period: str = Query("2026-06"),
     entity: Optional[str] = Query(None, description="Filter by entity"),
     status: Optional[str] = Query(None, description="Filter by status")
 ):
@@ -7161,7 +7164,7 @@ async def get_intercompany_transactions(
     Get intercompany transactions with optional filters
     """
     try:
-        transactions = load_csv_data('Intercompany_Transactions_May2026.csv')
+        transactions = load_csv_data('Intercompany_Transactions_Jun2026.csv')
         
         # Apply filters
         filtered = [t for t in transactions if t.get('Period') == fiscal_period]
@@ -7196,7 +7199,7 @@ async def post_intercompany_eliminations(request: IntercompanyEliminationRequest
     """
     try:
         # Load elimination journals
-        elimination_journals = load_csv_data('Intercompany_Elimination_Journals_May2026.csv')
+        elimination_journals = load_csv_data('Intercompany_Elimination_Journals_Jun2026.csv')
         
         # Filter for period
         period_journals = [j for j in elimination_journals if j.get('Period') == request.fiscal_period]
@@ -7291,7 +7294,7 @@ async def resolve_intercompany_variance(request: IntercompanyVarianceResolution)
     """
     try:
         # Load reconciliation data
-        reconciliation = load_csv_data('Intercompany_Reconciliation_May2026.csv')
+        reconciliation = load_csv_data('Intercompany_Reconciliation_Jun2026.csv')
         
         # Find and update the variance
         variance_found = False
@@ -7314,7 +7317,7 @@ async def resolve_intercompany_variance(request: IntercompanyVarianceResolution)
         
         # Save updated reconciliation
         fieldnames = list(reconciliation[0].keys())
-        save_csv_data('Intercompany_Reconciliation_May2026.csv', reconciliation, fieldnames)
+        save_csv_data('Intercompany_Reconciliation_Jun2026.csv', reconciliation, fieldnames)
         
         # Clean up any pending approvals
         for token, item in list(pending_approvals.items()):
@@ -7347,11 +7350,11 @@ async def resolve_intercompany_variance(request: IntercompanyVarianceResolution)
 
 # Data Models
 class AccrualsPrepaymentsRequest(BaseModel):
-    fiscal_period: str = Field("2026-05", description="Fiscal period for analysis")
+    fiscal_period: str = Field("2026-06", description="Fiscal period for analysis")
     entity_code: Optional[str] = Field(None, description="Filter by entity (optional)")
 
 class AccrualAdjustmentRequest(BaseModel):
-    fiscal_period: str = Field("2026-05", description="Fiscal period")
+    fiscal_period: str = Field("2026-06", description="Fiscal period")
     accrual_ids: List[str]
     approved_by: str
     comments: Optional[str] = None
@@ -7368,10 +7371,10 @@ async def analyze_accruals_prepayments(request: AccrualsPrepaymentsRequest):
     """
     try:
         # Load data
-        accruals = load_csv_data('Accruals_Register_May2026.csv')
-        prepayments = load_csv_data('Prepayments_Register_May2026.csv')
-        adjustment_journals = load_csv_data('Accrual_Adjustment_Journals_May2026.csv')
-        amortization_journals = load_csv_data('Prepayment_Amortization_Journals_May2026.csv')
+        accruals = load_csv_data('Accruals_Register_Jun2026.csv')
+        prepayments = load_csv_data('Prepayments_Register_Jun2026.csv')
+        adjustment_journals = load_csv_data('Accrual_Adjustment_Journals_Jun2026.csv')
+        amortization_journals = load_csv_data('Prepayment_Amortization_Journals_Jun2026.csv')
         
         # Filter for period
         period_accruals = [a for a in accruals if a.get('Period') == request.fiscal_period]
@@ -7511,7 +7514,7 @@ async def analyze_accruals_prepayments(request: AccrualsPrepaymentsRequest):
 
 @app.get("/tools/accruals/list", response_model=ToolResponse)
 async def get_accruals(
-    fiscal_period: str = Query("2026-05"),
+    fiscal_period: str = Query("2026-06"),
     status: Optional[str] = Query(None, description="Filter by status"),
     materiality: Optional[str] = Query(None, description="Filter by materiality")
 ):
@@ -7519,7 +7522,7 @@ async def get_accruals(
     Get accruals with optional filters
     """
     try:
-        accruals = load_csv_data('Accruals_Register_May2026.csv')
+        accruals = load_csv_data('Accruals_Register_Jun2026.csv')
         
         # Apply filters
         filtered = [a for a in accruals if a.get('Period') == fiscal_period]
@@ -7549,14 +7552,14 @@ async def get_accruals(
 
 @app.get("/tools/prepayments/list", response_model=ToolResponse)
 async def get_prepayments(
-    fiscal_period: str = Query("2026-05"),
+    fiscal_period: str = Query("2026-06"),
     status: Optional[str] = Query(None, description="Filter by status")
 ):
     """
     Get prepayments with optional filters
     """
     try:
-        prepayments = load_csv_data('Prepayments_Register_May2026.csv')
+        prepayments = load_csv_data('Prepayments_Register_Jun2026.csv')
         
         # Apply filters
         filtered = [p for p in prepayments if p.get('Period') == fiscal_period]
@@ -7589,7 +7592,7 @@ async def post_accrual_adjustments(request: AccrualAdjustmentRequest):
     """
     try:
         # Load adjustment journals
-        adjustment_journals = load_csv_data('Accrual_Adjustment_Journals_May2026.csv')
+        adjustment_journals = load_csv_data('Accrual_Adjustment_Journals_Jun2026.csv')
         
         # Find journals for the specified accruals
         journals_to_post = [j for j in adjustment_journals if j.get('Accrual_ID') in request.accrual_ids]
@@ -7640,7 +7643,7 @@ async def post_accrual_adjustments(request: AccrualAdjustmentRequest):
         
         # Save updated journals
         fieldnames = list(adjustment_journals[0].keys())
-        save_csv_data('Accrual_Adjustment_Journals_May2026.csv', adjustment_journals, fieldnames)
+        save_csv_data('Accrual_Adjustment_Journals_Jun2026.csv', adjustment_journals, fieldnames)
         
         return ToolResponse(
             success=True,
@@ -7662,7 +7665,7 @@ async def post_accrual_adjustments(request: AccrualAdjustmentRequest):
 
 # Data Models
 class BankReconciliationRequest(BaseModel):
-    fiscal_period: str = Field("2026-05", description="Fiscal period for reconciliation")
+    fiscal_period: str = Field("2026-06", description="Fiscal period for reconciliation")
     entity_code: Optional[str] = Field(None, description="Filter by entity (optional)")
 
 class BankReconciliationItemResolution(BaseModel):
@@ -7683,10 +7686,10 @@ async def bank_reconciliation(request: BankReconciliationRequest):
     """
     try:
         # Load data
-        bank_statements = load_csv_data('Bank_Statements_May2026.csv')
-        gl_cash_balances = load_csv_data('GL_Cash_Balances_May2026.csv')
-        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_May2026.csv')
-        reconciliation_journals = load_csv_data('Bank_Reconciliation_Journals_May2026.csv')
+        bank_statements = load_csv_data('Bank_Statements_Jun2026.csv')
+        gl_cash_balances = load_csv_data('GL_Cash_Balances_Jun2026.csv')
+        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_Jun2026.csv')
+        reconciliation_journals = load_csv_data('Bank_Reconciliation_Journals_Jun2026.csv')
         
         # Calculate totals
         total_bank_balance = sum(float(gl.get('Statement_Balance_AUD', 0)) for gl in gl_cash_balances)
@@ -7830,7 +7833,7 @@ async def bank_reconciliation(request: BankReconciliationRequest):
 
 @app.get("/tools/bank/items", response_model=ToolResponse)
 async def get_bank_reconciliation_items(
-    fiscal_period: str = Query("2026-05"),
+    fiscal_period: str = Query("2026-06"),
     item_type: Optional[str] = Query(None, description="Filter by item type"),
     materiality: Optional[str] = Query(None, description="Filter by materiality")
 ):
@@ -7838,7 +7841,7 @@ async def get_bank_reconciliation_items(
     Get bank reconciliation items with optional filters
     """
     try:
-        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_May2026.csv')
+        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_Jun2026.csv')
         
         # Apply filters
         filtered = reconciliation_items
@@ -7880,14 +7883,14 @@ async def get_bank_reconciliation_items(
 
 @app.get("/tools/bank/positions", response_model=ToolResponse)
 async def get_bank_positions(
-    fiscal_period: str = Query("2026-05"),
+    fiscal_period: str = Query("2026-06"),
     entity_code: Optional[str] = Query(None, description="Filter by entity")
 ):
     """
     Get bank and GL positions for all accounts
     """
     try:
-        gl_cash_balances = load_csv_data('GL_Cash_Balances_May2026.csv')
+        gl_cash_balances = load_csv_data('GL_Cash_Balances_Jun2026.csv')
         
         # Apply entity filter
         if entity_code:
@@ -7948,7 +7951,7 @@ async def post_bank_reconciliation_journals(
     """
     try:
         # Load existing journals
-        reconciliation_journals = load_csv_data('Bank_Reconciliation_Journals_May2026.csv')
+        reconciliation_journals = load_csv_data('Bank_Reconciliation_Journals_Jun2026.csv')
         
         # Check if entries are approved using registry
         unapproved_entries = []
@@ -8006,7 +8009,7 @@ async def post_bank_reconciliation_journals(
         # Save updated journals
         if updated_count > 0:
             fieldnames = list(reconciliation_journals[0].keys())
-            save_csv_data('Bank_Reconciliation_Journals_May2026.csv', reconciliation_journals, fieldnames)
+            save_csv_data('Bank_Reconciliation_Journals_Jun2026.csv', reconciliation_journals, fieldnames)
         
         return ToolResponse(
             success=True,
@@ -8033,7 +8036,7 @@ async def resolve_bank_reconciliation_item(request: BankReconciliationItemResolu
     """
     try:
         # Load reconciliation items
-        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_May2026.csv')
+        reconciliation_items = load_csv_data('Bank_Reconciliation_Items_Jun2026.csv')
         
         # Find and update the item
         item_found = False
@@ -8055,7 +8058,7 @@ async def resolve_bank_reconciliation_item(request: BankReconciliationItemResolu
         
         # Save updated items
         fieldnames = list(reconciliation_items[0].keys())
-        save_csv_data('Bank_Reconciliation_Items_May2026.csv', reconciliation_items, fieldnames)
+        save_csv_data('Bank_Reconciliation_Items_Jun2026.csv', reconciliation_items, fieldnames)
         
         # Clean up any pending approvals for this item
         for token, approval in list(pending_approvals.items()):
@@ -8087,17 +8090,17 @@ async def resolve_bank_reconciliation_item(request: BankReconciliationItemResolu
 # ============================================================================
 
 @app.get("/tools/close/status", response_model=ToolResponse)
-async def get_close_status(fiscal_period: str = Query("2026-05")):
+async def get_close_status(fiscal_period: str = Query("2026-06")):
     """
     Get combined status of all close activities
     """
     try:
         # Load all data
-        ic_transactions = load_csv_data('Intercompany_Transactions_May2026.csv')
-        ic_reconciliation = load_csv_data('Intercompany_Reconciliation_May2026.csv')
-        accruals = load_csv_data('Accruals_Register_May2026.csv')
-        prepayments = load_csv_data('Prepayments_Register_May2026.csv')
-        bank_items = load_csv_data('Bank_Reconciliation_Items_May2026.csv')
+        ic_transactions = load_csv_data('Intercompany_Transactions_Jun2026.csv')
+        ic_reconciliation = load_csv_data('Intercompany_Reconciliation_Jun2026.csv')
+        accruals = load_csv_data('Accruals_Register_Jun2026.csv')
+        prepayments = load_csv_data('Prepayments_Register_Jun2026.csv')
+        bank_items = load_csv_data('Bank_Reconciliation_Items_Jun2026.csv')
         
         # Filter for period
         ic_rec_period = [r for r in ic_reconciliation if r.get('Period') == fiscal_period]
@@ -8225,20 +8228,20 @@ class IBMBOBSummaryResponse(BaseModel):
 
 IBMBOB_DATA_FILES = {
     'pl': (
-        'IBMBOB_Group_PL_LineItems_May2026.csv',
-        'IBMBOB_Group_PL_LineItems_May2026_GENERATED.csv',
+        'IBMBOB_Group_PL_LineItems_Jun2026.csv',
+        'IBMBOB_Group_PL_LineItems_Jun2026_GENERATED.csv',
     ),
     'workforce': (
         'IBMBOB_Workforce_Cost_Output_Apr2026.csv',  # Your perfect file
         'IBMBOB_Workforce_Cost_Output_Apr2026_GENERATED.csv',
     ),
     'esg': (
-        'IBMBOB_ESG_Cost_KPI_May2026.csv',
-        'IBMBOB_ESG_Cost_KPI_May2026_GENERATED.csv',
+        'IBMBOB_ESG_Cost_KPI_Jun2026.csv',
+        'IBMBOB_ESG_Cost_KPI_Jun2026_GENERATED.csv',
     ),
     'enhanced_gl': (
-        'Raw_GL_Export_With_CostCenters_May2026_IBMBOB_Enhanced.csv',
-        'Raw_GL_Export_With_CostCenters_May2026_IBMBOB_Enhanced_GENERATED.csv',
+        'Raw_GL_Export_With_CostCenters_Jun2026_IBMBOB_Enhanced.csv',
+        'Raw_GL_Export_With_CostCenters_Jun2026_IBMBOB_Enhanced_GENERATED.csv',
     ),
 }
 
@@ -8403,7 +8406,7 @@ def load_enhanced_gl(fiscal_period: str = "2026-03") -> List[Dict[str, Any]]:
 # ============================================================================
 
 @app.get("/tools/pl/statement", response_model=ToolResponse)
-async def generate_pl_statement(fiscal_period: str = Query("2026-05")):
+async def generate_pl_statement(fiscal_period: str = Query("2026-06")):
     """
     Generate CFO-ready Profit & Loss statement with standard sections
     """
@@ -8494,7 +8497,7 @@ async def generate_pl_statement(fiscal_period: str = Query("2026-05")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/pl/transactions", response_model=ToolResponse)
-async def get_pl_transactions(fiscal_period: str = Query("2026-05"), section: Optional[str] = Query(None)):
+async def get_pl_transactions(fiscal_period: str = Query("2026-06"), section: Optional[str] = Query(None)):
     """Get P&L transactions filtered by section"""
     try:
         pl_data = load_pl_data(fiscal_period)
@@ -8524,7 +8527,7 @@ async def get_pl_transactions(fiscal_period: str = Query("2026-05"), section: Op
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/pl/approval_items", response_model=ToolResponse)
-async def get_pl_approval_items(fiscal_period: str = Query("2026-05")):
+async def get_pl_approval_items(fiscal_period: str = Query("2026-06")):
     """Get P&L items requiring CFO approval before close"""
     try:
         pl_data = load_pl_data(fiscal_period)
@@ -8550,7 +8553,7 @@ async def get_pl_approval_items(fiscal_period: str = Query("2026-05")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/pl/gl_reconciliation", response_model=ToolResponse)
-async def reconcile_pl_to_gl(fiscal_period: str = Query("2026-05")):
+async def reconcile_pl_to_gl(fiscal_period: str = Query("2026-06")):
     """Reconcile P&L totals back to Enhanced GL"""
     try:
         pl_data = load_pl_data(fiscal_period)
@@ -8585,7 +8588,7 @@ async def reconcile_pl_to_gl(fiscal_period: str = Query("2026-05")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/pl/variance_analysis", response_model=ToolResponse)
-async def analyze_pl_variances(fiscal_period: str = Query("2026-05")):
+async def analyze_pl_variances(fiscal_period: str = Query("2026-06")):
     """Analyze variances flagged in the P&L data"""
     try:
         pl_data = load_pl_data(fiscal_period)
@@ -8627,7 +8630,7 @@ async def analyze_pl_variances(fiscal_period: str = Query("2026-05")):
 # ============================================================================
 
 @app.get("/tools/workforce/cost_revenue_correlation", response_model=ToolResponse)
-async def analyze_workforce_cost_revenue(fiscal_period: str = Query("2026-05"), business_unit: Optional[str] = Query(None)):
+async def analyze_workforce_cost_revenue(fiscal_period: str = Query("2026-06"), business_unit: Optional[str] = Query(None)):
     """Correlate workforce cost with revenue/output by business unit"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8684,7 +8687,7 @@ async def analyze_workforce_cost_revenue(fiscal_period: str = Query("2026-05"), 
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/workforce/salary_analysis", response_model=ToolResponse)
-async def analyze_salary_costs(fiscal_period: str = Query("2026-05")):
+async def analyze_salary_costs(fiscal_period: str = Query("2026-06")):
     """Analyze salary costs by department, identify unusual patterns and compliance risks"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8771,7 +8774,7 @@ async def analyze_salary_costs(fiscal_period: str = Query("2026-05")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/workforce/cost_output_efficiency", response_model=ToolResponse)
-async def analyze_workforce_efficiency(fiscal_period: str = Query("2026-05")):
+async def analyze_workforce_efficiency(fiscal_period: str = Query("2026-06")):
     """Identify areas where workforce cost increases without output/utilisation improvement"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8840,7 +8843,7 @@ async def analyze_workforce_efficiency(fiscal_period: str = Query("2026-05")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/workforce/resource_optimization", response_model=ToolResponse)
-async def optimize_resource_allocation(fiscal_period: str = Query("2026-05")):
+async def optimize_resource_allocation(fiscal_period: str = Query("2026-06")):
     """Generate resource allocation recommendations to improve utilisation and margin"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8910,7 +8913,7 @@ async def optimize_resource_allocation(fiscal_period: str = Query("2026-05")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/workforce/labour_cost_metrics", response_model=ToolResponse)
-async def calculate_labour_cost_metrics(fiscal_period: str = Query("2026-05"), business_unit: Optional[str] = Query(None)):
+async def calculate_labour_cost_metrics(fiscal_period: str = Query("2026-06"), business_unit: Optional[str] = Query(None)):
     """Calculate labour cost per output metrics with filtering by business unit"""
     try:
         workforce_data = load_workforce_data(fiscal_period)
@@ -8980,7 +8983,7 @@ async def calculate_labour_cost_metrics(fiscal_period: str = Query("2026-05"), b
 # ============================================================================
 
 @app.get("/tools/esg/leakage_detection", response_model=ToolResponse)
-async def detect_esg_leakage(fiscal_period: str = Query("2026-05")):
+async def detect_esg_leakage(fiscal_period: str = Query("2026-06")):
     """Detect ESG cost leakage and misclassification"""
     try:
         esg_data = load_esg_data(fiscal_period)
@@ -9054,7 +9057,7 @@ async def detect_esg_leakage(fiscal_period: str = Query("2026-05")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/esg/financial_impact", response_model=ToolResponse)
-async def analyze_esg_financial_impact(fiscal_period: str = Query("2026-05")):
+async def analyze_esg_financial_impact(fiscal_period: str = Query("2026-06")):
     """Analyze ESG impact on working capital, margins, and cash flow"""
     try:
         esg_data = load_esg_data(fiscal_period)
@@ -9109,7 +9112,7 @@ async def analyze_esg_financial_impact(fiscal_period: str = Query("2026-05")):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/esg/disclosure_readiness", response_model=ToolResponse)
-async def assess_disclosure_readiness(fiscal_period: str = Query("2026-05")):
+async def assess_disclosure_readiness(fiscal_period: str = Query("2026-06")):
     """Assess ESG disclosure readiness and auditability"""
     try:
         esg_data = load_esg_data(fiscal_period)
@@ -9182,7 +9185,7 @@ async def assess_disclosure_readiness(fiscal_period: str = Query("2026-05")):
 
 @app.get("/tools/esg/scenario_modeling", response_model=ToolResponse)
 async def model_esg_scenario(
-    fiscal_period: str = Query("2026-05"),
+    fiscal_period: str = Query("2026-06"),
     target_increase_percent: float = Query(15, ge=5, le=30)
 ):
     """Simulate sustainability target increases and model impacts on cost structure and margins"""
@@ -9246,7 +9249,7 @@ async def model_esg_scenario(
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/esg/board_narrative", response_model=ToolResponse)
-async def generate_board_narrative(fiscal_period: str = Query("2026-05")):
+async def generate_board_narrative(fiscal_period: str = Query("2026-06")):
     """Generate board-ready ESG performance narrative linking outcomes to financial performance"""
     try:
         esg_data = load_esg_data(fiscal_period)
@@ -9310,7 +9313,7 @@ RECOMMENDATIONS:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tools/esg/kpi_tracking", response_model=ToolResponse)
-async def track_esg_kpis(fiscal_period: str = Query("2026-05"), category: Optional[str] = Query(None)):
+async def track_esg_kpis(fiscal_period: str = Query("2026-06"), category: Optional[str] = Query(None)):
     """Track ESG KPI attainment vs targets across categories"""
     try:
         esg_data = load_esg_data(fiscal_period)
@@ -9496,7 +9499,7 @@ def _render_milestones_with_progress_html(milestones: Dict[str, Any]) -> str:
     
 
 @app.get("/dashboard/progress", response_class=HTMLResponse)
-async def close_progress_dashboard(fiscal_period: str = Query("2026-05")):
+async def close_progress_dashboard(fiscal_period: str = Query("2026-06")):
     """
     Comprehensive close progress dashboard - FIXED VERSION
     """
@@ -10210,9 +10213,10 @@ async def close_progress_dashboard(fiscal_period: str = Query("2026-05")):
             </div>
             <div class="period-control">
                 <select id="periodSelect" class="period-select">
-                    <option value="2026-05" {'selected' if fiscal_period == '2026-05' else ''}>April 2026</option>
+                    <option value="2026-06" {'selected' if fiscal_period == '2026-06' else ''}>June 2026</option>
+                    <option value="2026-05" {'selected' if fiscal_period == '2026-05' else ''}>May 2026</option>
+                    <option value="2026-04" {'selected' if fiscal_period == '2026-04' else ''}>April 2026</option>
                     <option value="2026-03" {'selected' if fiscal_period == '2026-03' else ''}>March 2026</option>
-                    <option value="2026-02" {'selected' if fiscal_period == '2026-02' else ''}>February 2026</option>
                 </select>
                 <button class="refresh-btn" onclick="changePeriod()">Go</button>
                 <button class="refresh-btn" onclick="refreshDashboard()">🔄 Refresh</button>
@@ -10573,7 +10577,7 @@ def _render_audit_trail_html(approved_items: List[Dict], assigned_items: List[Di
 # ============================================================================
 
 @app.get("/api/close/progress")
-async def get_close_progress_api(fiscal_period: str = Query("2026-05")):
+async def get_close_progress_api(fiscal_period: str = Query("2026-06")):
     """
     CORRECTED: API endpoint to get close progress data as JSON (for auto-refresh)
     """
@@ -10592,7 +10596,7 @@ async def get_close_progress_api(fiscal_period: str = Query("2026-05")):
 # ============================================================================
 # Helper function to update milestones based on approval completion
 # ============================================================================
-def update_milestones_from_approvals(fiscal_period: str = "2026-05"):
+def update_milestones_from_approvals(fiscal_period: str = "2026-06"):
     """
     CORRECTED: Update milestone progress based on approval registry data.
     
@@ -10670,14 +10674,14 @@ def update_milestones_from_approvals(fiscal_period: str = "2026-05"):
 
 def update_progress_from_approvals():
     """Helper to update progress milestones after approvals"""
-    update_milestones_from_approvals("2026-05")
+    update_milestones_from_approvals("2026-06")
 
 
 
 # Call this periodically or when approvals are processed
 def update_progress_after_approval():
     """Call this after any approval decision to update progress"""
-    update_milestones_from_approvals("2026-05")
+    update_milestones_from_approvals("2026-06")
     logger.info("📊 Updated close progress milestones based on current state")
 
 
@@ -10707,23 +10711,23 @@ async def startup_event():
     
     # Check if data files exist
     required_files = [
-        'Raw_GL_Export_With_CostCenters_May2026.csv',
+        'Raw_GL_Export_With_CostCenters_Jun2026.csv',
         'Master_COA_Complete.csv',
         'Master_CostCenters_States.csv',
-        'AR_Subledger_May2026.csv',
-        'Budget_May2026_Detailed.csv',
+        'AR_Subledger_Jun2026.csv',
+        'Budget_Jun2026_Detailed.csv',
         'PL_Statement_Mar2025_Comparative.csv',
-        'Intercompany_Transactions_May2026.csv',
-        'Intercompany_Reconciliation_May2026.csv',
-        'Intercompany_Elimination_Journals_May2026.csv',
-        'Accruals_Register_May2026.csv',
-        'Prepayments_Register_May2026.csv',
-        'Accrual_Adjustment_Journals_May2026.csv',
-        'Prepayment_Amortization_Journals_May2026.csv',
-        'Bank_Statements_May2026.csv',
-        'GL_Cash_Balances_May2026.csv',
-        'Bank_Reconciliation_Items_May2026.csv',
-        'Bank_Reconciliation_Journals_May2026.csv'
+        'Intercompany_Transactions_Jun2026.csv',
+        'Intercompany_Reconciliation_Jun2026.csv',
+        'Intercompany_Elimination_Journals_Jun2026.csv',
+        'Accruals_Register_Jun2026.csv',
+        'Prepayments_Register_Jun2026.csv',
+        'Accrual_Adjustment_Journals_Jun2026.csv',
+        'Prepayment_Amortization_Journals_Jun2026.csv',
+        'Bank_Statements_Jun2026.csv',
+        'GL_Cash_Balances_Jun2026.csv',
+        'Bank_Reconciliation_Items_Jun2026.csv',
+        'Bank_Reconciliation_Journals_Jun2026.csv'
     ]
     
     files_found = 0
@@ -11075,6 +11079,695 @@ async def download_all_forecasts():
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating forecast bundle: {str(e)}")
+
+
+# ============================================================================
+# NATURAL LANGUAGE FORECAST EDITOR
+# ============================================================================
+
+
+class ForecastEditRequest(BaseModel):
+    prompt: str = Field(..., description="Plain-English editing instruction, e.g. 'Increase the forecast by 10%'")
+    model: str = Field("both", description="Which forecast to edit: 'quarterly', 'driver', or 'both'")
+    scenario: Optional[str] = Field(None, description="Override scenario: 'base', 'upside', or 'risk'. Defaults to 'base'.")
+
+class ForecastEditResponse(BaseModel):
+    success: bool
+    message: str
+    changes_applied: int
+    changes: List[Dict[str, Any]]
+    modified_quarterly_url: str
+    modified_driver_url: str
+    comparison_url: str
+    reset_url: str
+    state_url: str
+
+# In-memory session storage for generated Excel bytes (keyed by session token)
+_forecast_sessions: Dict[str, Dict[str, bytes]] = {}
+
+
+@app.post(
+    "/forecast/edit",
+    summary="Edit forecast via natural language prompt",
+    tags=["Forecast Editor"],
+    response_model=ForecastEditResponse,
+)
+async def edit_forecast_nl(request: ForecastEditRequest):
+    """
+    Apply a natural language editing instruction to the Q3 2026 forecast models.
+
+    **Examples:**
+    - `"Increase the forecast by 10%"`  
+    - `"Reduce the sales forecast for Q2 by 5%"`  
+    - `"Increase the revenue forecast for Product A by 20%"`  
+    - `"Reduce logistics costs by 15%"`  
+    - `"Increase the YoY growth rate by 5%"`
+
+    The agent detects the target driver, scenario, and magnitude from the prompt,
+    applies the change, regenerates both Excel workbooks, and returns download URLs
+    plus a full comparison report URL.
+    """
+    editor = get_global_editor()
+
+    try:
+        changes = editor.parse_and_apply(
+            prompt=request.prompt,
+            model=request.model if request.model in ("quarterly", "driver", "both") else "both",
+            scenario_override=request.scenario,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+    # Generate all Excel files and store in session
+    session_id = str(uuid.uuid4())
+    session_data: Dict[str, bytes] = {}
+
+    try:
+        session_data["quarterly"] = editor.generate_quarterly_excel_bytes()
+    except Exception as e:
+        logger.error(f"Error generating modified quarterly forecast: {e}")
+        session_data["quarterly"] = b""
+
+    try:
+        session_data["driver"] = editor.generate_driver_excel_bytes()
+    except Exception as e:
+        logger.error(f"Error generating modified driver forecast: {e}")
+        session_data["driver"] = b""
+
+    try:
+        session_data["comparison"] = editor.generate_comparison_excel_bytes(model=request.model)
+    except Exception as e:
+        logger.error(f"Error generating comparison report: {e}")
+        session_data["comparison"] = b""
+
+    _forecast_sessions[session_id] = session_data
+
+    base = APP_BASE_URL
+    return ForecastEditResponse(
+        success=True,
+        message=(
+            f"Successfully applied {len(changes)} change(s) from prompt: '{request.prompt}'. "
+            f"Use the URLs below to download the revised forecasts and comparison report."
+        ),
+        changes_applied=len(changes),
+        changes=changes,
+        modified_quarterly_url=f"{base}/forecast/edit/download-modified/quarterly/{session_id}",
+        modified_driver_url=f"{base}/forecast/edit/download-modified/driver/{session_id}",
+        comparison_url=f"{base}/forecast/edit/download-comparison/{session_id}",
+        reset_url=f"{base}/forecast/edit/reset",
+        state_url=f"{base}/forecast/edit/state",
+    )
+
+
+@app.get(
+    "/forecast/edit/download-modified/quarterly/{session_id}",
+    summary="Download modified Quarterly Forecast Excel",
+    tags=["Forecast Editor"],
+)
+async def download_modified_quarterly(session_id: str):
+    """Download the revised Q3 2026 Quarterly Forecast after NL edits."""
+    if session_id not in _forecast_sessions:
+        raise HTTPException(status_code=404, detail="Session not found. Call POST /forecast/edit first.")
+    content = _forecast_sessions[session_id].get("quarterly", b"")
+    if not content:
+        raise HTTPException(status_code=500, detail="Modified quarterly forecast could not be generated.")
+    return Response(
+        content=content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": 'attachment; filename="Q3_2026_Quarterly_Forecast_MODIFIED.xlsx"',
+            "Access-Control-Expose-Headers": "Content-Disposition",
+        },
+    )
+
+
+@app.get(
+    "/forecast/edit/download-modified/driver/{session_id}",
+    summary="Download modified Driver-Based Forecast Excel",
+    tags=["Forecast Editor"],
+)
+async def download_modified_driver(session_id: str):
+    """Download the revised Q3 2026 Driver-Based Forecast after NL edits."""
+    if session_id not in _forecast_sessions:
+        raise HTTPException(status_code=404, detail="Session not found. Call POST /forecast/edit first.")
+    content = _forecast_sessions[session_id].get("driver", b"")
+    if not content:
+        raise HTTPException(status_code=500, detail="Modified driver forecast could not be generated.")
+    return Response(
+        content=content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": 'attachment; filename="Driver_Forecast_Q3_2026_MODIFIED.xlsx"',
+            "Access-Control-Expose-Headers": "Content-Disposition",
+        },
+    )
+
+
+@app.get(
+    "/forecast/edit/download-comparison/{session_id}",
+    summary="Download Change Comparison Report Excel",
+    tags=["Forecast Editor"],
+)
+async def download_comparison_report(session_id: str):
+    """
+    Download the comparison Excel report showing every change made by NL prompts —
+    original value vs. modified value, delta amounts/percentages, and the prompt that
+    triggered each change. Suitable for client review and audit.
+    """
+    if session_id not in _forecast_sessions:
+        raise HTTPException(status_code=404, detail="Session not found. Call POST /forecast/edit first.")
+    content = _forecast_sessions[session_id].get("comparison", b"")
+    if not content:
+        raise HTTPException(status_code=500, detail="Comparison report could not be generated.")
+    return Response(
+        content=content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": 'attachment; filename="Forecast_Change_Comparison.xlsx"',
+            "Access-Control-Expose-Headers": "Content-Disposition",
+        },
+    )
+
+
+@app.get(
+    "/forecast/edit/state",
+    summary="Get current forecast driver state",
+    tags=["Forecast Editor"],
+)
+async def get_forecast_state(model: str = "both"):
+    """
+    Return the current driver values (including any NL edits applied so far).
+    Use `model` query param: 'quarterly', 'driver', or 'both'.
+    """
+    editor = get_global_editor()
+    return {
+        "success": True,
+        "model": model,
+        "state": editor.get_state(model),
+        "change_log": editor.get_change_log(),
+        "total_changes": len(editor.change_log),
+    }
+
+
+@app.post(
+    "/forecast/edit/reset",
+    summary="Reset forecast to original baseline values",
+    tags=["Forecast Editor"],
+)
+async def reset_forecast(model: str = "both"):
+    """
+    Reset the forecast editor state back to the original baseline values.
+    Any previously applied NL edits will be discarded.
+    Use `model` query param: 'quarterly', 'driver', or 'both'.
+    """
+    editor = get_global_editor()
+    editor.reset(model=model)
+    return {
+        "success": True,
+        "message": f"Forecast editor reset to original baseline values (model: {model}).",
+        "model": model,
+    }
+
+
+@app.get(
+    "/forecast/edit/ui",
+    response_class=HTMLResponse,
+    summary="Natural Language Forecast Editor UI",
+    tags=["Forecast Editor"],
+)
+async def forecast_editor_ui():
+    """
+    Interactive browser-based UI for natural language forecast editing.
+    Allows entering prompts, reviewing changes, and downloading modified/comparison files.
+    """
+    html = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Forecast Editor — Q3 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1F3864; --mid: #2E75B6; --light: #BDD7EE;
+    --green: #E2EFDA; --red: #FFE5E5; --amber: #FFF2CC;
+    --success: #28a745; --danger: #dc3545; --warning: #ffc107;
+    --bg: #0d1117; --card: #161b22; --border: #30363d;
+    --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
+    padding: 32px 40px;
+    display: flex; align-items: center; gap: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  .header-icon { font-size: 2.8rem; }
+  .header-title { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+  .header-sub { font-size: 0.9rem; color: #BDD7EE; margin-top: 4px; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 8px 32px rgba(46,117,182,0.15); }
+  .card-title {
+    font-size: 1.1rem; font-weight: 700; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    color: var(--accent);
+  }
+  .full-width { grid-column: 1 / -1; }
+  label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  input[type="text"], select, textarea {
+    width: 100%; padding: 12px 16px;
+    background: #0d1117; border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(88,166,255,0.15);
+  }
+  textarea { min-height: 70px; resize: vertical; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 24px; border: none; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; text-decoration: none;
+  }
+  .btn-primary { background: linear-gradient(135deg, #2E75B6, #1F3864); color: #fff; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(46,117,182,0.4); }
+  .btn-success { background: linear-gradient(135deg, #28a745, #1a7a2e); color: #fff; }
+  .btn-success:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(40,167,69,0.4); }
+  .btn-danger { background: linear-gradient(135deg, #dc3545, #a71d2a); color: #fff; }
+  .btn-danger:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(220,53,69,0.4); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { background: var(--card); border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+  .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .quick-prompts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .quick-btn {
+    padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--border);
+    background: #21262d; color: var(--muted);
+    transition: all 0.15s;
+  }
+  .quick-btn:hover { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .change-log { margin-top: 20px; }
+  .change-item {
+    display: grid; grid-template-columns: 1fr auto auto;
+    gap: 12px; align-items: center;
+    padding: 12px 16px; border-radius: 8px;
+    margin-bottom: 8px; font-size: 0.88rem;
+    border-left: 3px solid;
+    animation: fadeIn 0.3s ease;
+  }
+  .change-positive { background: #0d1f0d; border-color: #28a745; }
+  .change-negative { background: #1f0d0d; border-color: #dc3545; }
+  .change-label { font-weight: 600; }
+  .change-meta { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+  .change-values { text-align: right; }
+  .old-val { color: var(--muted); text-decoration: line-through; font-size: 0.82rem; }
+  .new-val { font-weight: 700; font-size: 0.95rem; }
+  .delta { font-size: 0.78rem; }
+  .delta-pos { color: #28a745; }
+  .delta-neg { color: #dc3545; }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+  }
+  .badge-quarterly { background: #0d1b2a; color: #58a6ff; border: 1px solid #1f3e6b; }
+  .badge-driver    { background: #1a0d2a; color: #bc8cff; border: 1px solid #3d1f6b; }
+  .badge-base      { background: #0d2a1a; color: #56d364; border: 1px solid #1f6b3d; }
+  .status-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .status-idle { background: #21262d; color: var(--muted); border: 1px solid var(--border); }
+  .status-loading { background: #0d1b2a; color: #58a6ff; border: 1px solid #1f3e6b; }
+  .status-success { background: #0d1f0d; color: #56d364; border: 1px solid #1f6b3d; }
+  .status-error { background: #1f0d0d; color: #f85149; border: 1px solid #6b1f1f; }
+  .spinner { width: 16px; height: 16px; border: 2px solid transparent; border-top-color: currentColor; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .empty-state { text-align: center; padding: 40px; color: var(--muted); font-size: 0.9rem; }
+  .empty-state-icon { font-size: 2.5rem; margin-bottom: 10px; }
+  .stats-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px; }
+  .stat-box {
+    flex: 1; min-width: 120px; padding: 14px 18px;
+    background: #0d1117; border-radius: 8px; border: 1px solid var(--border);
+    text-align: center;
+  }
+  .stat-val { font-size: 1.6rem; font-weight: 800; color: var(--accent); }
+  .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+  .downloads { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .download-card {
+    flex: 1; min-width: 200px; padding: 16px;
+    background: #0d1117; border: 1px solid var(--border); border-radius: 10px;
+    text-align: center; transition: all 0.2s;
+  }
+  .download-card:hover { border-color: var(--accent); }
+  .download-icon { font-size: 2rem; margin-bottom: 6px; }
+  .download-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; }
+  .download-desc { font-size: 0.75rem; color: var(--muted); margin-bottom: 12px; }
+  .separator { height: 1px; background: var(--border); margin: 20px 0; }
+  .prompt-history { max-height: 200px; overflow-y: auto; margin-top: 12px; }
+  .prompt-hist-item {
+    padding: 8px 12px; border-radius: 6px; background: #21262d;
+    font-size: 0.82rem; color: var(--muted); margin-bottom: 6px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .prompt-hist-item:hover { background: var(--border); color: var(--text); }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">🤖</div>
+  <div>
+    <div class="header-title">AI Forecast Editor</div>
+    <div class="header-sub">Q3 2026 · Natural Language Forecast Editing · Real-time Excel Generation</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="grid">
+
+    <!-- LEFT: Editor Panel -->
+    <div>
+      <div class="card full-width" style="grid-column: unset;">
+        <div class="card-title">✍️ Natural Language Editor</div>
+
+        <div id="statusBar" class="status-bar status-idle">
+          <div>💡 Enter a prompt to modify the forecast</div>
+        </div>
+
+        <!-- Quick prompts -->
+        <label>Quick Prompts</label>
+        <div class="quick-prompts">
+          <span class="quick-btn" onclick="setPrompt('Increase the forecast by 10%')">+10% Revenue</span>
+          <span class="quick-btn" onclick="setPrompt('Reduce the sales forecast for Q2 by 5%')">-5% Q2 Sales</span>
+          <span class="quick-btn" onclick="setPrompt('Increase the revenue forecast for Product A by 20%')">+20% Product A</span>
+          <span class="quick-btn" onclick="setPrompt('Reduce logistics costs by 15%')">-15% Logistics</span>
+          <span class="quick-btn" onclick="setPrompt('Increase the YoY growth rate by 5%')">+5% Growth Rate</span>
+          <span class="quick-btn" onclick="setPrompt('Reduce workforce costs by 8%')">-8% Workforce</span>
+          <span class="quick-btn" onclick="setPrompt('Increase subscription revenue by 25%')">+25% Subscription</span>
+          <span class="quick-btn" onclick="setPrompt('Reduce the Aug seasonality factor by 10%')">-10% Aug Seasonal</span>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label>Editing Prompt</label>
+          <textarea id="promptInput" rows="3"
+            placeholder="e.g. Increase the forecast by 10%&#10;Reduce the sales forecast for Q2 by 5%&#10;Increase the revenue forecast for Product A by 20%"></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+          <div>
+            <label>Target Model</label>
+            <select id="modelSelect">
+              <option value="both">Both Models</option>
+              <option value="quarterly">Quarterly Forecast Only</option>
+              <option value="driver">Driver-Based Forecast Only</option>
+            </select>
+          </div>
+          <div>
+            <label>Scenario Override (optional)</label>
+            <select id="scenarioSelect">
+              <option value="">Auto-detect (default: Base)</option>
+              <option value="base">Base</option>
+              <option value="upside">Upside</option>
+              <option value="risk">Risk-Adjusted</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button id="applyBtn" class="btn btn-primary" onclick="applyEdit()">
+            🚀 Apply Edit
+          </button>
+          <button class="btn btn-danger btn-outline" onclick="resetForecast()" style="margin-left: auto;">
+            🔄 Reset to Baseline
+          </button>
+        </div>
+
+        <!-- Prompt history -->
+        <div id="promptHistorySection" style="display:none; margin-top: 20px;">
+          <div class="separator"></div>
+          <label>Prompt History (click to re-apply)</label>
+          <div class="prompt-history" id="promptHistory"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Stats + Downloads -->
+    <div>
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-title">📊 Session Statistics</div>
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-val" id="statTotal">0</div>
+            <div class="stat-lbl">Total Changes</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statQuarterly">0</div>
+            <div class="stat-lbl">Quarterly</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statDriver">0</div>
+            <div class="stat-lbl">Driver</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statPrompts">0</div>
+            <div class="stat-lbl">Prompts</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="downloadSection" style="display:none;">
+        <div class="card-title">⬇️ Download Files</div>
+        <div class="downloads" id="downloadLinks"></div>
+      </div>
+    </div>
+
+    <!-- FULL WIDTH: Change Log -->
+    <div class="card full-width">
+      <div class="card-title">📋 Change Log
+        <span style="margin-left: auto; font-size: 0.8rem; font-weight: 400; color: var(--muted);">
+          All modifications applied in this session
+        </span>
+      </div>
+      <div id="changeLog">
+        <div class="empty-state">
+          <div class="empty-state-icon">🔍</div>
+          <div>No changes yet — enter a prompt above to get started</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+let allChanges = [];
+let promptHistory = [];
+let lastSessionId = null;
+
+function setPrompt(text) {
+  document.getElementById('promptInput').value = text;
+  document.getElementById('promptInput').focus();
+}
+
+function setStatus(type, msg, loading=false) {
+  const bar = document.getElementById('statusBar');
+  bar.className = 'status-bar status-' + type;
+  bar.innerHTML = (loading ? '<div class="spinner"></div>' : '') + `<div>${msg}</div>`;
+}
+
+async function applyEdit() {
+  const prompt = document.getElementById('promptInput').value.trim();
+  if (!prompt) { setStatus('error', '⚠️ Please enter a prompt'); return; }
+
+  const model = document.getElementById('modelSelect').value;
+  const scenario = document.getElementById('scenarioSelect').value || null;
+
+  const btn = document.getElementById('applyBtn');
+  btn.disabled = true;
+  setStatus('loading', `Applying: "${prompt}"`, true);
+
+  try {
+    const resp = await fetch(`${API}/forecast/edit`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt, model, scenario})
+    });
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      setStatus('error', '❌ ' + (data.detail || 'Unknown error'));
+      return;
+    }
+
+    // Store session for downloads
+    const sessionId = extractSessionId(data.comparison_url);
+    lastSessionId = sessionId;
+
+    // Update changes
+    allChanges.push(...data.changes);
+    promptHistory.push(prompt);
+
+    // Update stats
+    updateStats();
+
+    // Render change log
+    renderChangeLog(data.changes, prompt);
+
+    // Show downloads
+    showDownloads(data);
+
+    // Update prompt history
+    updatePromptHistory();
+
+    // Clear input
+    document.getElementById('promptInput').value = '';
+    setStatus('success', `✅ Applied ${data.changes_applied} change(s) — download files below`);
+
+  } catch (e) {
+    setStatus('error', '❌ Network error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function extractSessionId(url) {
+  const parts = url.split('/');
+  return parts[parts.length - 1];
+}
+
+function renderChangeLog(changes, prompt) {
+  const container = document.getElementById('changeLog');
+
+  // Remove empty state
+  const empty = container.querySelector('.empty-state');
+  if (empty) empty.remove();
+
+  // Add a prompt header
+  const promptHdr = document.createElement('div');
+  promptHdr.style.cssText = 'font-size:0.78rem;color:#8b949e;padding:8px 4px 4px;border-top:1px solid #30363d;margin-top:8px;';
+  promptHdr.textContent = `📝 Prompt: "${prompt}"`;
+  container.insertBefore(promptHdr, container.firstChild);
+
+  changes.reverse().forEach(ch => {
+    const isPos = (ch.delta || 0) >= 0;
+    const item = document.createElement('div');
+    item.className = 'change-item ' + (isPos ? 'change-positive' : 'change-negative');
+    item.innerHTML = `
+      <div>
+        <div class="change-label">${ch.label}</div>
+        <div class="change-meta">
+          <span class="badge badge-${ch.model}">${ch.model}</span>
+          <span class="badge badge-base" style="margin-left:4px;">${ch.scenario}</span>
+          &nbsp; ${ch.driver_key}
+        </div>
+      </div>
+      <div class="change-values">
+        <div class="old-val">${ch.old_value_formatted}</div>
+        <div class="new-val">${ch.new_value_formatted}</div>
+      </div>
+      <div class="change-values" style="min-width:80px;">
+        <div class="delta ${isPos ? 'delta-pos' : 'delta-neg'}">${ch.delta_pct_formatted}</div>
+      </div>`;
+    container.insertBefore(item, promptHdr.nextSibling);
+  });
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allChanges.length;
+  document.getElementById('statQuarterly').textContent = allChanges.filter(c => c.model === 'quarterly').length;
+  document.getElementById('statDriver').textContent = allChanges.filter(c => c.model === 'driver').length;
+  document.getElementById('statPrompts').textContent = promptHistory.length;
+}
+
+function showDownloads(data) {
+  const section = document.getElementById('downloadSection');
+  section.style.display = '';
+  const container = document.getElementById('downloadLinks');
+
+  const qId = extractSessionId(data.modified_quarterly_url);
+  const dId = extractSessionId(data.modified_driver_url);
+  const cId = extractSessionId(data.comparison_url);
+
+  container.innerHTML = `
+    <div class="download-card">
+      <div class="download-icon">📊</div>
+      <div class="download-label">Quarterly Forecast</div>
+      <div class="download-desc">Three-scenario P&L with your edits</div>
+      <a class="btn btn-success" style="width:100%;justify-content:center;" href="${API}/forecast/edit/download-modified/quarterly/${qId}" target="_blank">Download XLSX</a>
+    </div>
+    <div class="download-card">
+      <div class="download-icon">📈</div>
+      <div class="download-label">Driver-Based Forecast</div>
+      <div class="download-desc">Monthly Jul/Aug/Sep driver model</div>
+      <a class="btn btn-success" style="width:100%;justify-content:center;" href="${API}/forecast/edit/download-modified/driver/${dId}" target="_blank">Download XLSX</a>
+    </div>
+    <div class="download-card">
+      <div class="download-icon">🔍</div>
+      <div class="download-label">Comparison Report</div>
+      <div class="download-desc">Original vs. modified diff with all changes highlighted</div>
+      <a class="btn btn-primary" style="width:100%;justify-content:center;" href="${API}/forecast/edit/download-comparison/${cId}" target="_blank">Download XLSX</a>
+    </div>`;
+}
+
+function updatePromptHistory() {
+  const section = document.getElementById('promptHistorySection');
+  const container = document.getElementById('promptHistory');
+  section.style.display = '';
+  container.innerHTML = promptHistory.slice().reverse().map(p =>
+    `<div class="prompt-hist-item" onclick="setPrompt(${JSON.stringify(p)})">${p}</div>`
+  ).join('');
+}
+
+async function resetForecast() {
+  if (!confirm('Reset all changes back to the original baseline values?')) return;
+  setStatus('loading', 'Resetting forecast...', true);
+  try {
+    const resp = await fetch(`${API}/forecast/edit/reset?model=both`, {method: 'POST'});
+    const data = await resp.json();
+    if (data.success) {
+      allChanges = [];
+      promptHistory = [];
+      lastSessionId = null;
+      updateStats();
+      document.getElementById('changeLog').innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><div>No changes yet — enter a prompt above to get started</div></div>';
+      document.getElementById('downloadSection').style.display = 'none';
+      document.getElementById('promptHistorySection').style.display = 'none';
+      setStatus('success', '✅ Forecast reset to original baseline values');
+    }
+  } catch(e) {
+    setStatus('error', '❌ Reset failed: ' + e.message);
+  }
+}
+</script>
+</body>
+</html>"""
+    return HTMLResponse(content=html)
 
 
 # ============================================================================
