@@ -6,7 +6,7 @@ import asyncio
 
 try:
     # Try importing the app module to check for syntax errors
-    print("🔍 Checking app.py syntax...")
+    print("Checking app.py syntax...")
     import app
     print("✅ app.py imported successfully - no syntax errors!")
     

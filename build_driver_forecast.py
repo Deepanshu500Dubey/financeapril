@@ -136,7 +136,7 @@ c.alignment = Alignment(horizontal="center", vertical="center")
 
 ws.merge_cells("B6:E6")
 c = ws["B6"]
-c.value = "Baseline: May 2026 Actuals  |  Prepared: June 2026"
+c.value = "Baseline: May 2026 Actuals  |  Prepared: July 2026"
 c.font = Font(name="Arial", size=10, color=DKGRAY)
 c.fill = PatternFill("solid", start_color=LIGHT)
 c.alignment = Alignment(horizontal="center", vertical="center")
