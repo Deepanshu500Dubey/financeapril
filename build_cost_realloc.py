@@ -146,7 +146,7 @@ ws.column_dimensions['D'].width = 24
 
 hdr(ws,1,1,"STRATEGIC COST REALLOCATION MODEL — Q3 2026",bg=NAVY,sz=18,merge=(1,4))
 hdr(ws,2,1,"Support Function Efficiency → Revenue Region Investment",bg=MID,sz=12,merge=(1,4))
-hdr(ws,3,1,"Baseline: May 2026 Actuals  |  Forecast: Jul–Aug–Sep 2026",bg=LIGHT,fg=NAVY,sz=10,merge=(1,4))
+hdr(ws,3,1,"Baseline: May 2026 Actuals  |  Forecast: Aug–Aug–Sep 2026",bg=LIGHT,fg=NAVY,sz=10,merge=(1,4))
 ws.row_dimensions[1].height=36; ws.row_dimensions[2].height=24; ws.row_dimensions[3].height=20
 
 r=5
@@ -179,7 +179,7 @@ logic=[
     ("40% retained","Drops to EBITDA / Net Income immediately"),
     ("60% reinvested","Reallocated: QLD 30% | NSW 30% | WA 25% | MKT 15%"),
     ("Revenue multiplier","QLD 3.5x | NSW 3.0x | WA 3.2x | MKT 2.0x"),
-    ("Quarterly execution","3-month ramp: Jul 80% | Aug 90% | Sep 100% of saving"),
+    ("Quarterly execution","3-month ramp: Aug 80% | Aug 90% | Sep 100% of saving"),
 ]
 for k,v in logic:
     ws.cell(row=r,column=2,value=k).font=Font(name="Arial",bold=True,size=10,color=NAVY)
@@ -192,7 +192,7 @@ hdr(ws,r,2,"SHEET INDEX",bg=NAVY,merge=(1,3)); r+=1
 nav=[
     ("CC Baseline","May 2026 cost by cost center — support vs revenue"),
     ("Reallocation Engine","10% saving calc, reinvestment splits, revenue uplift"),
-    ("Regional P&L","Monthly Jul/Aug/Sep P&L per cost center/region"),
+    ("Regional P&L","Monthly Aug/Aug/Sep P&L per cost center/region"),
     ("Consolidated P&L","Group-level monthly P&L under reallocation"),
     ("Margin Analysis","EBITDA, Net Income, cost-to-rev ratios before/after"),
     ("Efficiency Metrics","Revenue productivity, output per $, utilisation"),
@@ -350,12 +350,12 @@ hdr(ws,1,1,"REALLOCATION ENGINE — ASSUMPTIONS & CALCULATION",bg=ORNG,merge=(1,
 ws.row_dimensions[1].height=28
 
 # Ramp schedule: reductions phase in over Q3
-RAMP = {"Jul":0.80,"Aug":0.90,"Sep":1.00}
+RAMP = {"Aug":0.80,"Aug":0.90,"Sep":1.00}
 
 r=3
 r=sec(ws,r,6,"STEP 1: SUPPORT FUNCTION REDUCTION (10%)",NAVY)
 for col,txt,bg in [(1,"Cost Center",NAVY),(2,"Monthly Baseline",MID),(3,"10% Saving",MID),
-                    (4,"Jul Saving (80%)",ORNG),(5,"Aug Saving (90%)",ORNG),(6,"Sep Saving (100%)",ORNG)]:
+                    (4,"Aug Saving (80%)",ORNG),(5,"Aug Saving (90%)",ORNG),(6,"Sep Saving (100%)",ORNG)]:
     c=ws.cell(row=r,column=col,value=txt)
     c.font=Font(name="Arial",bold=True,color=WHITE,size=10)
     c.fill=PatternFill("solid",start_color=bg)
@@ -385,13 +385,13 @@ r=sec(ws,r,6,"STEP 2: PROFIT RETENTION vs REINVESTMENT SPLIT",MID)
 lbl(ws,r,1,"Profit Retention %",bold=False); inp(ws,r,2,0.40,PCT); r+=1; ret_r=r-1
 lbl(ws,r,1,"Reinvestment %",bold=False); frm(ws,r,2,f"=1-B{ret_r}",PCT); r+=1; reinv_pct_r=r-1
 
-lbl(ws,r,1,"Profit Bottom-Line Boost — Jul",bold=True,bg=GREEN)
+lbl(ws,r,1,"Profit Bottom-Line Boost — Aug",bold=True,bg=GREEN)
 frm(ws,r,4,f"=D{total_saving_r}*B{ret_r}",DOLR,True,color="006400"); 
 frm(ws,r,5,f"=E{total_saving_r}*B{ret_r}",DOLR,True,color="006400")
 frm(ws,r,6,f"=F{total_saving_r}*B{ret_r}",DOLR,True,color="006400")
 fill_row(ws,r,6,GREEN); profit_direct_r=r; r+=1
 
-lbl(ws,r,1,"Available for Reinvestment — Jul/Aug/Sep",bold=True,bg=AMBER)
+lbl(ws,r,1,"Available for Reinvestment — Aug/Aug/Sep",bold=True,bg=AMBER)
 frm(ws,r,4,f"=D{total_saving_r}*B{reinv_pct_r}",DOLR,True)
 frm(ws,r,5,f"=E{total_saving_r}*B{reinv_pct_r}",DOLR,True)
 frm(ws,r,6,f"=F{total_saving_r}*B{reinv_pct_r}",DOLR,True)
@@ -399,7 +399,7 @@ fill_row(ws,r,6,AMBER); reinvest_pool_r=r; r+=2
 
 r=sec(ws,r,6,"STEP 3: REINVESTMENT ALLOCATION TO REVENUE REGIONS",MID)
 for col,txt,bg in [(1,"Region",MID),(2,"Alloc %",MID),(3,"Rev Multiplier",MID),
-                    (4,"Jul Reinvest $",ORNG),(5,"Aug Reinvest $",ORNG),(6,"Sep Reinvest $",ORNG)]:
+                    (4,"Aug Reinvest $",ORNG),(5,"Aug Reinvest $",ORNG),(6,"Sep Reinvest $",ORNG)]:
     c=ws.cell(row=r,column=col,value=txt)
     c.font=Font(name="Arial",bold=True,color=WHITE,size=10)
     c.fill=PatternFill("solid",start_color=bg)
@@ -421,7 +421,7 @@ frm(ws,r,2,f"=SUM(B{r-4}:B{r-1})",PCT,color=DKGRAY)
 ws.cell(row=r,column=2).font=Font(name="Arial",size=10,color=DKGRAY,italic=True); r+=2
 
 r=sec(ws,r,6,"STEP 4: REVENUE UPLIFT FROM REINVESTMENT",MID)
-for col,txt in [(1,"Region"),(2,"Jul Invest $"),(3,"Jul Rev Uplift"),(4,"Aug Invest $"),(5,"Aug Rev Uplift"),(6,"Sep Invest $")]:
+for col,txt in [(1,"Region"),(2,"Aug Invest $"),(3,"Aug Rev Uplift"),(4,"Aug Invest $"),(5,"Aug Rev Uplift"),(6,"Sep Invest $")]:
     c=ws.cell(row=r,column=col,value=txt)
     c.font=Font(name="Arial",bold=True,color=WHITE,size=10)
     c.fill=PatternFill("solid",start_color=MID)
@@ -433,7 +433,7 @@ for cc in REINVEST_ALLOC:
     rr=region_rows[cc]
     lbl(ws,r,1,cc,bold=True,color="006400")
     frm(ws,r,2,f"=D{rr}",DOLR)
-    frm(ws,r,3,f"=D{rr}*{mult}",DOLR,True,color="006400")  # Jul revenue uplift
+    frm(ws,r,3,f"=D{rr}*{mult}",DOLR,True,color="006400")  # Aug revenue uplift
     frm(ws,r,4,f"=E{rr}",DOLR)
     frm(ws,r,5,f"=E{rr}*{mult}",DOLR,True,color="006400")  # Aug
     frm(ws,r,6,f"=F{rr}*{mult}",DOLR,True,color="006400")  # Sep
@@ -448,7 +448,7 @@ tot_rev_uplift_r=r; r+=2
 # Sep col also needs col 5 covered — add col 5 sum for Sep
 # Actually let me add total reinvest too
 r=sec(ws,r,6,"STEP 5: NET INCREMENTAL IMPACT SUMMARY",NAVY)
-lbl(ws,r,1,"Month"); ws.cell(row=r,column=2,value="Jul 2026"); ws.cell(row=r,column=3,value="Aug 2026"); ws.cell(row=r,column=4,value="Sep 2026"); ws.cell(row=r,column=5,value="Q3 Total")
+lbl(ws,r,1,"Month"); ws.cell(row=r,column=2,value="Aug 2026"); ws.cell(row=r,column=3,value="Aug 2026"); ws.cell(row=r,column=4,value="Sep 2026"); ws.cell(row=r,column=5,value="Q3 Total")
 for c in range(1,6): ws.cell(row=r,column=c).font=Font(name="Arial",bold=True,size=10,color=WHITE); ws.cell(row=r,column=c).fill=PatternFill("solid",start_color=NAVY)
 r+=1
 
@@ -456,7 +456,7 @@ impact_items=[
     ("Total Cost Saving","=D{ts}","=E{ts}","=F{ts}",total_saving_r),
     ("Profit Retention (direct EBITDA)","=D{p}","=E{p}","=F{p}",profit_direct_r),
     ("Reinvested in Revenue Regions","=D{ri}","=E{ri}","=F{ri}",reinvest_pool_r),
-    ("Revenue Uplift from Reinvestment","=C{ru}","=E{ru}","=F{ru}",tot_rev_uplift_r),  # Note: col C=Jul, E=Aug, F=Sep for rev uplift
+    ("Revenue Uplift from Reinvestment","=C{ru}","=E{ru}","=F{ru}",tot_rev_uplift_r),  # Note: col C=Aug, E=Aug, F=Sep for rev uplift
 ]
 for label,jul_f,aug_f,sep_f,src_r in impact_items:
     lbl(ws,r,1,label,bold="EBITDA" in label or "Revenue Uplift" in label)
@@ -484,7 +484,7 @@ ws.column_dimensions['A'].width = 26
 for col in ['B','C','D','E','F','G','H','I','J']:
     ws.column_dimensions[col].width = 16
 
-hdr(ws,1,1,"REGIONAL P&L — MONTHLY FORECAST JUL/AUG/SEP 2026 (POST-REALLOCATION)",bg="70AD47",merge=(1,10),sz=12)
+hdr(ws,1,1,"REGIONAL P&L — MONTHLY FORECAST AUG/AUG/SEP 2026 (POST-REALLOCATION)",bg="70AD47",merge=(1,10),sz=12)
 ws.row_dimensions[1].height=28
 
 # Revenue by region (May actuals)
@@ -492,7 +492,7 @@ REV_REGIONS={"NSW":12569315,"QLD":7298312,"WA":6892850,"VIC":8920159,"SA":486554
 WORKFORCE={"NSW":3571090,"QLD":3582740,"WA":2324260,"VIC":3401870,"SA":1447230}
 # MKT drives top-line but doesn't have a standalone revenue center
 # Revenue seasonality (same as driver model)
-SEA={"Jul":0.95,"Aug":1.00,"Sep":1.08}
+SEA={"Aug":0.95,"Aug":1.00,"Sep":1.08}
 # Revenue growth (base case 8.8%)
 REV_GR=1.088
 
@@ -501,7 +501,7 @@ REINV_M={"QLD":REINVEST*0.30,"NSW":REINVEST*0.30,"WA":REINVEST*0.25,"MKT":REINVE
 
 r=3
 regions=["NSW","QLD","WA","VIC","SA"]
-months=["Jul","Aug","Sep"]
+months=["Aug","Aug","Sep"]
 
 # Header row
 hdr(ws,r,1,"Region / Metric","70AD47")
@@ -529,10 +529,10 @@ for reg in regions:
 r+=1
 
 # For each month
-MONTH_BG={"Jul":LGRAY,"Aug":LIGHT,"Sep":GREEN}
+MONTH_BG={"Aug":LGRAY,"Aug":LIGHT,"Sep":GREEN}
 for month in months:
     seas=SEA[month]
-    ramp={"Jul":0.80,"Aug":0.90,"Sep":1.00}[month]
+    ramp={"Aug":0.80,"Aug":0.90,"Sep":1.00}[month]
     
     ws.merge_cells(start_row=r,start_column=1,end_row=r,end_column=10)
     c=ws.cell(row=r,column=1,value=f"── {month} 2026 ──")
@@ -599,9 +599,9 @@ for col,w in [('B',18),('C',18),('D',18),('E',18),('F',18),('G',18),('H',18)]:
 hdr(ws,1,1,"CONSOLIDATED P&L — BEFORE vs AFTER COST REALLOCATION",bg=MID,merge=(1,8),sz=13)
 ws.row_dimensions[1].height=28
 
-# Columns: May Actual | Jul Before | Jul After | Aug Before | Aug After | Sep Before | Sep After | Q3 After
+# Columns: May Actual | Aug Before | Aug After | Aug Before | Aug After | Sep Before | Sep After | Q3 After
 for col,txt,bg in [(1,"Line Item",NAVY),(2,"May 2026\nActual",DKGRAY),
-                    (3,"Jul Before",MID),(4,"Jul After\n(Realloc)","006400"),
+                    (3,"Aug Before",MID),(4,"Aug After\n(Realloc)","006400"),
                     (5,"Aug Before",MID),(6,"Aug After\n(Realloc)","006400"),
                     (7,"Sep Before",MID),(8,"Sep After\n(Realloc)","006400")]:
     c=ws.cell(row=2,column=col,value=txt)
@@ -619,7 +619,7 @@ TOTAL_REINV=sum(REINV_M.values())
 def rev_uplift_total(ramp): 
     return sum(REINV_M[cc]*ramp*REV_MULT[cc] for cc in REINV_M)
 
-SAVINGS_BY_MONTH={"Jul":SAVINGS*0.80,"Aug":SAVINGS*0.90,"Sep":SAVINGS*1.00}
+SAVINGS_BY_MONTH={"Aug":SAVINGS*0.80,"Aug":SAVINGS*0.90,"Sep":SAVINGS*1.00}
 
 # We also add support function reduction to expenses
 def adj_exp(seas,ramp):
@@ -671,8 +671,8 @@ exp_line_rows=[]
 for label,may_amt,reduction in expense_map:
     lbl(ws,r,1,f"  {label}",indent=1)
     inp(ws,r,2,may_amt,DOLR)
-    for month,ramp,cols in [("Jul",0.80,(3,4)),("Aug",0.90,(5,6)),("Sep",1.00,(7,8))]:
-        seas={"Jul":0.95,"Aug":1.00,"Sep":1.08}[month]
+    for month,ramp,cols in [("Aug",0.80,(3,4)),("Aug",0.90,(5,6)),("Sep",1.00,(7,8))]:
+        seas={"Aug":0.95,"Aug":1.00,"Sep":1.08}[month]
         before=may_amt*1.05*seas
         after=before*(1-reduction*ramp) if reduction>0 else before
         inp(ws,r,cols[0],before,DOLR)
@@ -775,7 +775,7 @@ for col,txt,bg in [(1,"Metric",PURPLE),(2,"May 2026 Actual",DKGRAY),
     c.alignment=Alignment(horizontal="center" if col>1 else "left",vertical="center")
 
 r=3
-# Q3 totals (sum of Jul+Aug+Sep)
+# Q3 totals (sum of Aug+Aug+Sep)
 q3_rev_before = base_rev(0.95)+base_rev(1.00)+base_rev(1.08)
 q3_rev_after  = q3_rev_before + rev_uplift_total(0.80)+rev_uplift_total(0.90)+rev_uplift_total(1.00)
 q3_exp_before = adj_exp(0.95,0)+adj_exp(1.00,0)+adj_exp(1.08,0)  # no reduction
@@ -1015,7 +1015,7 @@ risks=[
     ("QLD/WA market saturation limits revenue uplift","Revenue / Market","Medium","Medium",
      "-$800K","0","Pre-qualify pipeline before reinvesting; target new verticals","CRO"),
     ("Marketing lag — MKT reinvestment takes 2-3 months to convert","Revenue / Timing","High","Medium",
-     "-$500K Q3 miss","0","Front-load MKT investment to Jul to allow conversion time","CMO / CFO"),
+     "-$500K Q3 miss","0","Front-load MKT investment to Aug to allow conversion time","CMO / CFO"),
     ("Rapid growth stretches operational capacity","Scalability","Medium","High",
      "-$1M service degradation","0","Hire contractors for peak capacity; monitor NPS weekly","COO / CFO"),
     ("","","","","","","",""),
@@ -1218,7 +1218,7 @@ ws.column_dimensions['E'].width = 22
 
 hdr(ws,1,1,"EXECUTIVE SUMMARY — CFO BRIEFING",bg=NAVY,sz=16,merge=(1,5))
 hdr(ws,2,1,"Strategic Cost Reallocation: Support Function Efficiency → Revenue Region Investment",bg=MID,sz=11,merge=(1,5))
-hdr(ws,3,1,"Q3 2026 (Jul–Aug–Sep)  |  Baseline: May 2026 Actuals",bg=LIGHT,fg=NAVY,sz=10,merge=(1,5))
+hdr(ws,3,1,"Q3 2026 (Aug–Aug–Sep)  |  Baseline: May 2026 Actuals",bg=LIGHT,fg=NAVY,sz=10,merge=(1,5))
 for r_h in [1,2,3]: ws.row_dimensions[r_h].height=26
 
 r=5
@@ -1276,15 +1276,15 @@ r+=1
 hdr(ws,r,2,"TOP 8 CFO ACTIONS",bg=NAVY,merge=(1,4)); r+=1
 actions=[
     ("🟢 IMMEDIATE","Identify and terminate idle cloud resources and unused SaaS licences (IT -10%)",
-     "CTO","Jul 1"),
+     "CTO","Aug 1"),
     ("🟢 IMMEDIATE","Renegotiate top 5 supplier contracts for OPS: freight, telecom, utilities",
-     "COO / Procurement","Jul 1"),
+     "COO / Procurement","Aug 1"),
     ("🟢 IMMEDIATE","Release QLD + WA reinvestment budgets to regional sales managers",
-     "CFO / CRO","Jul 1"),
+     "CFO / CRO","Aug 1"),
     ("🟡 HIGH","Audit CORP advisory retainers — terminate where value is not demonstrated",
-     "CFO","Jul 15"),
+     "CFO","Aug 15"),
     ("🟡 HIGH","Automate HR admin: onboarding, payroll reconciliation, leave management",
-     "CHRO / CTO","Jul–Aug"),
+     "CHRO / CTO","Aug–Aug"),
     ("🟡 HIGH","Set monthly ROI tracking: if multiplier < 2.0x by Aug, redirect reinvestment",
      "CFO","Monthly"),
     ("🔴 CRITICAL","Ring-fence: insurance, audit, tier-1 IT, revenue workforce — do NOT cut",
@@ -1307,7 +1307,7 @@ top_risks=[
     ("HIGH","IT service degradation if production systems cut","Maintain SLA floor; cut licences not infrastructure"),
     ("HIGH","Revenue multiplier misses model (3.5x assumed QLD)","Monthly ROI review; redirect if <2x by Aug"),
     ("HIGH","HR attrition from restructure uncertainty","Communicate early; protect compensation; target process costs"),
-    ("MED","MKT reinvestment conversion lag (2-3 months)","Front-load Jul spend; set pipeline KPIs by week 4"),
+    ("MED","MKT reinvestment conversion lag (2-3 months)","Front-load Aug spend; set pipeline KPIs by week 4"),
 ]
 for severity,risk,action in top_risks:
     bg=RED if severity=="HIGH" else AMBER

@@ -113,8 +113,8 @@ sc(c,bold=False,fc=ACCENT_GOLD,bg=DARK_NAVY,align="center",size=10)
 for i,(lbl,val) in enumerate([
     ("Prepared by:","CFO Office — Financial Planning & Analysis"),
     ("Baseline Period:","May 2026 Actuals"),
-    ("Forecast Period:","Q3 2026 (Jul–Sep 2026)"),
-    ("Model Date:","July 2026"),
+    ("Forecast Period:","Q3 2026 (Aug–Sep 2026)"),
+    ("Model Date:","August 2026"),
     ("Classification:","CONFIDENTIAL — Internal Use Only"),
 ],6):
     ws.row_dimensions[i].height=18

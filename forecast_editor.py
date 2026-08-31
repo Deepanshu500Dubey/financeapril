@@ -147,7 +147,7 @@ def _driver_defaults() -> Dict[str, Any]:
         # ── REVENUE DRIVERS ───────────────────────────────────────────────────
         "revenue_baseline":      {"label": "May 2026 Monthly Revenue Baseline ($)",    "base": 40546176, "upside": 40546176, "risk": 40546176, "type": "dollar"},
         "revenue_growth_rate":   {"label": "YoY Revenue Growth Rate",                  "base": 0.088,    "upside": 0.20,     "risk": 0.045,    "type": "pct"},
-        "jul_seasonality":       {"label": "Jul Seasonality Factor",                   "base": 0.95,     "upside": 0.95,     "risk": 0.90,     "type": "pct"},
+        "jul_seasonality":       {"label": "Aug Seasonality Factor",                   "base": 0.95,     "upside": 0.95,     "risk": 0.90,     "type": "pct"},
         "aug_seasonality":       {"label": "Aug Seasonality Factor",                   "base": 1.00,     "upside": 1.05,     "risk": 0.95,     "type": "pct"},
         "sep_seasonality":       {"label": "Sep Seasonality Factor",                   "base": 1.08,     "upside": 1.20,     "risk": 1.00,     "type": "pct"},
         "product_mix":           {"label": "Product Revenue Mix (%)",                  "base": 0.415,    "upside": 0.415,    "risk": 0.40,     "type": "pct"},
@@ -673,7 +673,7 @@ def _patch_driver_script(code: str, state: Dict[str, Any]) -> str:
                           s["revenue_growth_rate"]["base"],
                           s["revenue_growth_rate"]["upside"],
                           s["revenue_growth_rate"]["risk"])
-    code = _replace_drow(code, "Jul Seasonality Factor",
+    code = _replace_drow(code, "Aug Seasonality Factor",
                           s["jul_seasonality"]["base"],
                           s["jul_seasonality"]["upside"],
                           s["jul_seasonality"]["risk"])

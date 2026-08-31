@@ -1,10 +1,10 @@
 Account_Code,Account_Name,Account_Type,Category,Cost_Center,Budget_Amount,Notes
-4000,Product Sales Revenue,Revenue,Operating Revenue,MKT,30500000.00,10% growth target over Jul 2025
+4000,Product Sales Revenue,Revenue,Operating Revenue,MKT,30500000.00,10% growth target over Aug 2025
 4010,Service Revenue,Revenue,Operating Revenue,MKT,6500000.00,Expansion of service offerings
 4020,Subscription Revenue,Revenue,Operating Revenue,MKT,3600000.00,New subscription products launched
 4100,Interest Income,Revenue,Non-Operating Revenue,FIN,600000.00,Based on cash position
 4200,FX Gain,Revenue,Non-Operating Revenue,FIN,200000.00,Conservative estimate
-TOTAL_REVENUE,Total Revenue,Revenue,Total,ALL,41400000.00,11.4% growth over Jul 2025
+TOTAL_REVENUE,Total Revenue,Revenue,Total,ALL,41400000.00,11.4% growth over Aug 2025
 5000,Salaries and Wages,Expense,Personnel,HR,1150000.00,3% salary increase + headcount growth
 5010,Employee Benefits,Expense,Personnel,HR,1050000.00,Increased healthcare costs
 5020,Contractor Fees,Expense,Personnel,HR,900000.00,Reduced contractor dependency
@@ -33,8 +33,8 @@ TOTAL_REVENUE,Total Revenue,Revenue,Total,ALL,41400000.00,11.4% growth over Jul 
 5900,Bank Charges,Expense,Finance,FIN,1270000.00,Transaction fees
 5910,Interest Expense,Expense,Finance,FIN,950000.00,Debt servicing
 5920,FX Loss,Expense,Finance,FIN,1150000.00,Hedging costs
-TOTAL_EXPENSES,Total Expenses,Expense,Total,ALL,31270000.00,4.7% increase over Jul 2025
+TOTAL_EXPENSES,Total Expenses,Expense,Total,ALL,31270000.00,4.7% increase over Aug 2025
 NET_INCOME_BUDGET,Net Income Budget,Net Income,Total,ALL,10130000.00,24.5% margin target
-PROFIT_MARGIN_TARGET,Profit Margin Target,Ratio,Total,ALL,24.5%,Improvement over Jul 2025
+PROFIT_MARGIN_TARGET,Profit Margin Target,Ratio,Total,ALL,24.5%,Improvement over Aug 2025
 EBITDA_BUDGET,EBITDA Budget,Metric,Total,ALL,12310000.00,Target 29.7% margin
 EBITDA_MARGIN_TARGET,EBITDA Margin Target,Ratio,Total,ALL,29.7%,Stretch target

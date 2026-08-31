@@ -129,14 +129,14 @@ c.alignment = Alignment(horizontal="center", vertical="center")
 
 ws.merge_cells("B5:E5")
 c = ws["B5"]
-c.value = "Q3 2026 Monthly Projections | Jul–Aug–Sep 2026"
+c.value = "Q3 2026 Monthly Projections | Aug–Aug–Sep 2026"
 c.font = Font(name="Arial", bold=True, size=13, color=WHITE)
 c.fill = PatternFill("solid", start_color=MID)
 c.alignment = Alignment(horizontal="center", vertical="center")
 
 ws.merge_cells("B6:E6")
 c = ws["B6"]
-c.value = "Baseline: May 2026 Actuals  |  Prepared: July 2026"
+c.value = "Baseline: May 2026 Actuals  |  Prepared: August 2026"
 c.font = Font(name="Arial", size=10, color=DKGRAY)
 c.fill = PatternFill("solid", start_color=LIGHT)
 c.alignment = Alignment(horizontal="center", vertical="center")
@@ -176,7 +176,7 @@ nav_items = [
     ("Drivers", "Scenario control, key assumptions & driver inputs"),
     ("Revenue Model", "Volume × price × seasonality drivers by BU"),
     ("Cost Model", "Fixed/variable cost decomposition & driver calcs"),
-    ("P&L Monthly", "Jul / Aug / Sep accounting P&L — all 3 scenarios"),
+    ("P&L Monthly", "Aug / Aug / Sep accounting P&L — all 3 scenarios"),
     ("Cash Flow", "Operating cash vs. accounting income reconciliation"),
     ("Working Capital", "DSO, AR collection timing, DPO, WC movements"),
     ("Budget Variance", "Actual vs. budget analysis by cost centre"),
@@ -264,7 +264,7 @@ r = 6
 r = sec(ws, r, 6, "REVENUE DRIVERS", NAVY)
 drow(ws,r,"May 2026 Monthly Revenue Baseline ($)",40546176,40546176,40546176,DOLR,"Source: PL_Statement_May2025_Comparative.csv"); r+=1
 drow(ws,r,"YoY Revenue Growth Rate",0.088,0.20,0.045,PCT,"Base=May26 YoY avg; Upside=+20%; Risk=muted growth"); r+=1
-drow(ws,r,"Jul Seasonality Factor",0.95,0.95,0.90,PCT,"Q3 typically softer; Risk scenario assumes demand drag"); r+=1
+drow(ws,r,"Aug Seasonality Factor",0.95,0.95,0.90,PCT,"Q3 typically softer; Risk scenario assumes demand drag"); r+=1
 drow(ws,r,"Aug Seasonality Factor",1.00,1.05,0.95,PCT,"Mid-quarter normalization"); r+=1
 drow(ws,r,"Sep Seasonality Factor",1.08,1.20,1.00,PCT,"End-of-quarter uplift; Upside assumes strong close"); r+=1
 drow(ws,r,"Product Revenue Mix (%)",0.415,0.415,0.40,PCT,"Source: May26 actuals"); r+=1
@@ -316,7 +316,7 @@ ws.row_dimensions[1].height = 28
 
 # Sub-header
 for col, txt, bg in [(1,"Revenue Driver",NAVY),(2,"May 2026 Actual",DKGRAY),
-                      (3,"Jul 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),
+                      (3,"Aug 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),
                       (6,"Q3 Total",NAVY),(7,"vs May (Δ$)",DKGRAY),(8,"vs May (Δ%)",DKGRAY)]:
     c = ws.cell(row=2, column=col, value=txt)
     c.font = Font(name="Arial", bold=True, color=WHITE, size=10)
@@ -325,7 +325,7 @@ for col, txt, bg in [(1,"Revenue Driver",NAVY),(2,"May 2026 Actual",DKGRAY),
 
 # All driver refs point to Drivers!E column (Active Value)
 # Row map in Drivers sheet:
-# E7 = Baseline revenue  E8 = Growth rate  E9=Jul seas  E10=Aug seas  E11=Sep seas
+# E7 = Baseline revenue  E8 = Growth rate  E9=Aug seas  E10=Aug seas  E11=Sep seas
 # E12=Product mix  E13=Service mix  E14=Sub mix
 
 DR = "Drivers!E"  # shorthand
@@ -388,7 +388,7 @@ frm(ws,r,5,f"=SUM(E{r-5}:E{r-1})",DOLR,bold=True); frm(ws,r,6,f"=SUM(F{r-5}:F{r-
 r+=1
 sec(ws, r, 8, "SEASONALITY & GROWTH NOTES", DKGRAY); r+=1
 notes = [
-    "Jul factor (Active):", f"={DR}9",
+    "Aug factor (Active):", f"={DR}9",
     "Aug factor (Active):", f"={DR}10",
     "Sep factor (Active):", f"={DR}11",
     "Growth Rate (Active):", f"={DR}8",
@@ -416,7 +416,7 @@ hdr(ws, 1, 1, "COST MODEL — FIXED / VARIABLE DECOMPOSITION", bg=NAVY, merge=(1
 ws.row_dimensions[1].height = 28
 
 for col, txt, bg in [(1,"Cost Line",NAVY),(2,"May 2026 Actual",DKGRAY),
-                      (3,"Jul 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),
+                      (3,"Aug 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),
                       (6,"Q3 Total","ED7D31"),(7,"vs May (Δ$)",DKGRAY),(8,"Type",DKGRAY)]:
     c = ws.cell(row=2, column=col, value=txt)
     c.font = Font(name="Arial", bold=True, color=WHITE, size=10)
@@ -426,7 +426,7 @@ for col, txt, bg in [(1,"Cost Line",NAVY),(2,"May 2026 Actual",DKGRAY),
 # Revenue references from Revenue Model
 RM = "'Revenue Model'!"
 # Rev row 4 in Revenue Model = rev_row = 4
-RR = f"{RM}C{rev_model_rev_row}"   # Jul revenue
+RR = f"{RM}C{rev_model_rev_row}"   # Aug revenue
 RR_D = f"{RM}D{rev_model_rev_row}" # Aug
 RR_E = f"{IM}E{rev_model_rev_row}" if False else f"{RM}E{rev_model_rev_row}" # Sep
 RR_B = f"{RM}B{rev_model_rev_row}" # May actual
@@ -521,7 +521,7 @@ hdr(ws, 1, 1, "P&L MONTHLY FORECAST — ACCOUNTING PERFORMANCE", bg=NAVY, merge=
 ws.row_dimensions[1].height = 28
 
 for col, txt, bg in [(1,"Line Item",NAVY),(2,"May 2026 Actual",DKGRAY),
-                      (3,"Jul 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),
+                      (3,"Aug 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),
                       (6,"Q3 2026 Total",NAVY),(7,"Q3 Margin %",NAVY)]:
     c = ws.cell(row=2, column=col, value=txt)
     c.font = Font(name="Arial", bold=True, color=WHITE, size=10)
@@ -698,7 +698,7 @@ hdr(ws, 1, 1, "CASH FLOW — ACCOUNTING INCOME vs CASH REALISATION", bg="7030A0"
 ws.row_dimensions[1].height = 30
 
 for col, txt, bg in [(1,"Line Item","7030A0"),(2,"May 2026",DKGRAY),
-                      (3,"Jul 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),(6,"Q3 Total","7030A0")]:
+                      (3,"Aug 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),(6,"Q3 Total","7030A0")]:
     c = ws.cell(row=2, column=col, value=txt)
     c.font = Font(name="Arial", bold=True, color=WHITE, size=10)
     c.fill = PatternFill("solid", start_color=bg)
@@ -789,7 +789,7 @@ icf_row = r; r+=1
 sec(ws, r, 6, "NET CASH POSITION", NAVY); r+=1
 lbl(ws,r,1,"Opening Cash Balance",bold=True)
 frm(ws,r,2,"=12911223",DOLR,True)
-frm(ws,r,3,f"=B{r}",DOLR,True,color=BGREEN)  # Jul opens = May close
+frm(ws,r,3,f"=B{r}",DOLR,True,color=BGREEN)  # Aug opens = May close
 frm(ws,r,4,f"=E{r-1}",DOLR,True,color=BGREEN)  # Will be set iteratively below
 frm(ws,r,5,f"=E{r-1}",DOLR,True,color=BGREEN)
 frm(ws,r,6,"",DOLR)
@@ -862,7 +862,7 @@ hdr(ws, 1, 1, "WORKING CAPITAL — DSO / AR AGING / COLLECTION TIMING", bg="00B0
 ws.row_dimensions[1].height = 28
 
 for col, txt, bg in [(1,"Metric","00B0F0"),(2,"May 2026 Actual",DKGRAY),
-                      (3,"Jul 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),(6,"Q3 Avg / Total","00B0F0")]:
+                      (3,"Aug 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),(6,"Q3 Avg / Total","00B0F0")]:
     c = ws.cell(row=2, column=col, value=txt)
     c.font = Font(name="Arial", bold=True, color=WHITE, size=10)
     c.fill = PatternFill("solid", start_color=bg)
@@ -1051,7 +1051,7 @@ ws.column_dimensions['A'].width = 36
 for col,w in [('B',18),('C',18),('D',18),('E',18),('F',16)]:
     ws.column_dimensions[col].width = w
 
-hdr(ws,1,1,"SCENARIO COMPARISON — Q3 2026 (JUL+AUG+SEP COMBINED)",bg="C00000",merge=(1,6))
+hdr(ws,1,1,"SCENARIO COMPARISON — Q3 2026 (AUG+AUG+SEP COMBINED)",bg="C00000",merge=(1,6))
 ws.row_dimensions[1].height = 28
 
 for col,txt,bg in [(1,"KPI / Driver","C00000"),(2,"May 2026 Actual",DKGRAY),
@@ -1115,7 +1115,7 @@ def q3_ebitda(scen_col):
             f"(1-Drivers!{scen_col}16-Drivers!{scen_col}22-Drivers!{scen_col}23-"
             f"Drivers!{scen_col}24-Drivers!{scen_col}25-Drivers!{scen_col}27)")
 
-sc_kpi(ws,r,"Q3 Revenue — Jul","=40546176*0.95",
+sc_kpi(ws,r,"Q3 Revenue — Aug","=40546176*0.95",
        f"=Drivers!B7*(1+Drivers!B8)*Drivers!B9",
        f"=Drivers!C7*(1+Drivers!C8)*Drivers!C9",
        f"=Drivers!D7*(1+Drivers!D8)*Drivers!D9",DOLR); r+=1
@@ -1311,7 +1311,7 @@ r+=3
 
 # Monthly P&L summary
 hdr(ws,r,2,"MONTHLY P&L SUMMARY",bg=MID,merge=(1,6)); r+=1
-for col,txt,bg in [(2,"Line Item",MID),(3,"Jul 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),(6,"Q3 Total",NAVY),(7,"NI Margin",NAVY)]:
+for col,txt,bg in [(2,"Line Item",MID),(3,"Aug 2026",MID),(4,"Aug 2026",MID),(5,"Sep 2026",MID),(6,"Q3 Total",NAVY),(7,"NI Margin",NAVY)]:
     c=ws.cell(row=r,column=col,value=txt)
     c.font=Font(name="Arial",bold=True,color=WHITE,size=10)
     c.fill=PatternFill("solid",start_color=bg)
@@ -1345,7 +1345,7 @@ for label,src_row,fmt,bold in dash_pl:
 r+=1
 # Cash flow summary
 hdr(ws,r,2,"CASH FLOW SUMMARY",bg="7030A0",merge=(1,6)); r+=1
-for col,txt in [(2,"Line Item"),(3,"Jul"),(4,"Aug"),(5,"Sep"),(6,"Q3 Total")]:
+for col,txt in [(2,"Line Item"),(3,"Aug"),(4,"Aug"),(5,"Sep"),(6,"Q3 Total")]:
     c=ws.cell(row=r,column=col,value=txt)
     c.font=Font(name="Arial",bold=True,color=WHITE,size=10)
     c.fill=PatternFill("solid",start_color="7030A0")
@@ -1362,8 +1362,8 @@ r+=1
 # CFO Action Items
 hdr(ws,r,2,"TOP CFO ACTIONS — Q3 2026",bg=NAVY,merge=(1,6)); r+=1
 cfo_actions=[
-    ("🔴 URGENT","Escalate Incitec ($245K) & Orica ($287K) >90d AR — debt recovery by Jul 15","AR Manager"),
-    ("🔴 URGENT","Lock in freight contracts before fuel surcharge escalation — target Jul 1","Procurement"),
+    ("🔴 URGENT","Escalate Incitec ($245K) & Orica ($287K) >90d AR — debt recovery by Aug 15","AR Manager"),
+    ("🔴 URGENT","Lock in freight contracts before fuel surcharge escalation — target Aug 1","Procurement"),
     ("🟡 HIGH","Negotiate extended DPO (42d) with top 5 suppliers to release $800K working capital","CFO"),
     ("🟡 HIGH","Implement FX hedging programme for USD exposures >$500K — Middle East risk","Treasurer"),
     ("🟢 MEDIUM","Redirect Google Ads $500K prepayment to highest-ROI channels before Sep renewal","CMO"),
